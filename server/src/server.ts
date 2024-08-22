@@ -2,11 +2,59 @@ require("dotenv").config();
 
 import express, { NextFunction, Request, Response } from "express";
 import { Client } from "@notionhq/client";
+import { z } from "zod";
 
-interface ThingToLearn {
-  label: string;
-  url: string;
-}
+const taskRowSchema = z.object({
+  properties: z.object({
+    completed: z.object({
+      checkbox: z.boolean(),
+    }),
+    priority: z.object({
+      select: z.object({
+        name: z.string(),
+      }),
+    }),
+    tags: z.object({
+      multi_select: z.array(
+        z.object({
+          name: z.string(),
+        })
+      ),
+    }),
+    status: z.object({
+      select: z.object({
+        name: z.string(),
+      }),
+    }),
+    estimation: z.object({
+      number: z.number(),
+    }),
+    dueDate: z.object({
+      date: z.object({
+        start: z.string(),
+      }),
+    }),
+    createdAt: z.object({
+      date: z.object({
+        start: z.string(),
+      }),
+    }),
+    description: z.object({
+      rich_text: z.array(
+        z.object({
+          plain_text: z.string(),
+        })
+      ),
+    }),
+    name: z.object({
+      title: z.array(
+        z.object({
+          plain_text: z.string(),
+        })
+      ),
+    }),
+  }),
+});
 
 // The dotenv library will read from your .env file into these values on `process.env`
 const notionDatabaseId = process.env.NOTION_DB_ID;
@@ -37,36 +85,35 @@ app.get("/", async (req: Request, res: Response) => {
     database_id: notionDatabaseId,
   });
   const list = query.results.map((row) => {
-    if (!("properties" in row)) {
-      return { label: "NOT_FOUND", url: "" };
-    }
+    const parsed = taskRowSchema.safeParse(row);
 
-    console.log("row", row);
+    if (!parsed.data) return null;
 
-    const labelCell = row.properties.label;
-    const urlCell = row.properties.url;
-    const finishedCell = row.properties.finished;
-    const createdAtCell = row.properties.createdAt;
+    const {
+      properties: {
+        completed,
+        createdAt,
+        description,
+        dueDate,
+        estimation,
+        name,
+        priority,
+        status,
+        tags,
+      },
+    } = parsed.data;
 
-    const isLabel = labelCell.type === "rich_text";
-    const isUrl = urlCell.type === "url";
-    const isFinished = finishedCell.type === "checkbox";
-    const isCreatedAt = createdAtCell.type === "date";
-
-    if (
-      isLabel &&
-      isUrl &&
-      isFinished &&
-      isCreatedAt &&
-      labelCell.rich_text instanceof Array
-    ) {
-      const label = labelCell.rich_text[0].plain_text;
-      const url = urlCell.url ?? "";
-      const finished = finishedCell.checkbox;
-      const createdAt = createdAtCell.date?.start;
-
-      return { label, url, finished, createdAt };
-    }
+    return {
+      name: name.title[0].plain_text,
+      status: status.select.name,
+      priority: priority.select.name,
+      dueDate: dueDate.date.start,
+      completed: completed.checkbox,
+      tags: tags.multi_select.map((tag) => tag.name),
+      estimation: estimation.number,
+      description: description.rich_text[0].plain_text,
+      createdAt: createdAt.date.start,
+    };
   });
   res.json(list);
 });
