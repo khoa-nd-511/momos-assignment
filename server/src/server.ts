@@ -41,17 +41,31 @@ app.get("/", async (req: Request, res: Response) => {
       return { label: "NOT_FOUND", url: "" };
     }
 
+    console.log("row", row);
+
     const labelCell = row.properties.label;
     const urlCell = row.properties.url;
+    const finishedCell = row.properties.finished;
+    const createdAtCell = row.properties.createdAt;
 
     const isLabel = labelCell.type === "rich_text";
     const isUrl = urlCell.type === "url";
+    const isFinished = finishedCell.type === "checkbox";
+    const isCreatedAt = createdAtCell.type === "date";
 
-    if (isLabel && isUrl && labelCell.rich_text instanceof Array) {
+    if (
+      isLabel &&
+      isUrl &&
+      isFinished &&
+      isCreatedAt &&
+      labelCell.rich_text instanceof Array
+    ) {
       const label = labelCell.rich_text[0].plain_text;
       const url = urlCell.url ?? "";
+      const finished = finishedCell.checkbox;
+      const createdAt = createdAtCell.date?.start;
 
-      return { label, url };
+      return { label, url, finished, createdAt };
     }
   });
   res.json(list);
