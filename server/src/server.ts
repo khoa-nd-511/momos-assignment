@@ -6,71 +6,53 @@ import { z } from "zod";
 
 const taskRowSchema = z.object({
   properties: z.object({
-    completed: z
-      .object({
-        checkbox: z.boolean(),
-      })
-      .transform((c) => c.checkbox),
-    priority: z
-      .object({
-        select: z.object({
+    completed: z.object({
+      checkbox: z.boolean(),
+    }),
+    priority: z.object({
+      select: z.object({
+        name: z.string(),
+      }),
+    }),
+    tags: z.object({
+      multi_select: z.array(
+        z.object({
           name: z.string(),
-        }),
-      })
-      .transform((p) => p.select.name),
-    tags: z
-      .object({
-        multi_select: z.array(
-          z.object({
-            name: z.string(),
-          })
-        ),
-      })
-      .transform((tag) => tag.multi_select[0].name),
-    status: z
-      .object({
-        select: z.object({
-          name: z.string(),
-        }),
-      })
-      .transform((s) => s.select.name),
-    estimation: z
-      .object({
-        number: z.number(),
-      })
-      .transform((e) => e.number),
-    dueDate: z
-      .object({
-        date: z.object({
-          start: z.string(),
-        }),
-      })
-      .transform((d) => d.date.start),
-    createdAt: z
-      .object({
-        date: z.object({
-          start: z.string(),
-        }),
-      })
-      .transform((d) => d.date.start),
-    description: z
-      .object({
-        rich_text: z.array(
-          z.object({
-            plain_text: z.string(),
-          })
-        ),
-      })
-      .transform((d) => d.rich_text[0].plain_text),
-    name: z
-      .object({
-        title: z.array(
-          z.object({
-            plain_text: z.string(),
-          })
-        ),
-      })
-      .transform((t) => t.title[0].plain_text),
+        })
+      ),
+    }),
+    status: z.object({
+      select: z.object({
+        name: z.string(),
+      }),
+    }),
+    estimation: z.object({
+      number: z.number(),
+    }),
+    dueDate: z.object({
+      date: z.object({
+        start: z.string(),
+      }),
+    }),
+    createdAt: z.object({
+      date: z.object({
+        start: z.string(),
+      }),
+    }),
+    description: z.object({
+      rich_text: z.array(
+        z.object({
+          plain_text: z.string(),
+        })
+      ),
+    }),
+    name: z.object({
+      title: z.array(
+        z.object({
+          plain_text: z.string(),
+        })
+      ),
+    }),
   }),
 });
 
@@ -122,15 +104,15 @@ app.get("/", async (req: Request, res: Response) => {
     } = parsed.data;
 
     return {
-      name,
-      status,
-      priority,
-      dueDate,
-      completed,
-      tags,
-      estimation,
-      description,
-      createdAt,
+      name: name.title[0].plain_text,
+      status: status.select.name,
+      priority: priority.select.name,
+      dueDate: dueDate.date.start,
+      completed: completed.checkbox,
+      tags: tags.multi_select.map((tag) => tag.name),
+      estimation: estimation.number,
+      description: description.rich_text[0].plain_text,
+      createdAt: createdAt.date.start,
     };
   });
   res.json(list);
