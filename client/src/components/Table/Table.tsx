@@ -46,6 +46,13 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
               {headerGroup.headers.map((header) => {
                 const sort = header.column.getIsSorted();
                 const sortIcon = sort ? sortIcons[sort] : null;
+                let cursor = "";
+
+                if (_loading) {
+                  cursor = "cursor-not-allowed";
+                } else if (header.column.getCanSort()) {
+                  cursor = "cursor-pointer";
+                }
 
                 return (
                   <th
@@ -54,9 +61,7 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
                     style={{ width: `${header.getSize()}px` }}
                   >
                     <div
-                      className={
-                        header.column.getCanSort() ? "cursor-pointer" : ""
-                      }
+                      className={`${cursor}`}
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       {header.isPlaceholder

@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-export function useFetch<TLoader extends (...args: any) => Promise<any>>(
+export function useLoader<TLoader extends (...args: any) => Promise<any>>(
   loader: TLoader
 ): {
   loading: boolean;
   data: Awaited<ReturnType<typeof loader>> | undefined;
   error: any;
+  load: (...args: Parameters<TLoader>) => void;
 } {
   const [data, setData] = useState<
     Awaited<ReturnType<typeof loader>> | undefined
@@ -13,18 +14,18 @@ export function useFetch<TLoader extends (...args: any) => Promise<any>>(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const load = (...args: Parameters<TLoader>) => {
     setLoading(true);
     setData(undefined);
     setError(null);
 
-    loader()
+    loader(...args)
       .then(setData)
       .catch(setError)
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  };
 
-  return { data, loading, error };
+  return { data, loading, error, load };
 }
