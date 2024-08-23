@@ -1,3 +1,8 @@
+export interface ITag {
+  id: string;
+  name: string;
+}
+
 export interface ITask {
   name: string;
   description: string;
@@ -7,5 +12,5 @@ export interface ITask {
   dueDate: string;
   createdAt: string;
   completed: boolean;
-  tags: string[];
+  tags: ITag[];
 }
