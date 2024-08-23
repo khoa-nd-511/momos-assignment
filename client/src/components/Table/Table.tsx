@@ -12,10 +12,17 @@ interface TableProps<TData extends any = unknown> {
   loading: boolean | { value: boolean; node: ReactNode };
   tableProps?: Partial<TableOptions<TData>>;
   error?: any;
+  sortIcons?: Record<string, ReactNode>;
 }
 
 const Table = <TData = unknown,>(props: TableProps<TData>) => {
-  const { loading, data, columns, tableProps = {} } = props;
+  const {
+    loading,
+    data,
+    columns,
+    tableProps = {},
+    sortIcons = { asc: " 🔼", desc: " 🔽" },
+  } = props;
 
   const table = useReactTable({
     data: data || [],
@@ -33,23 +40,37 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
   return (
     <div className="p-2">
       <table>
-        <thead>
+        <thead className="sticky top-0 bg-white">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  className="text-left px-4"
-                  style={{ width: `${header.getSize()}px` }}
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
+              {headerGroup.headers.map((header) => {
+                const sort = header.column.getIsSorted();
+                const sortIcon = sort ? sortIcons[sort] : null;
+
+                return (
+                  <th
+                    key={header.id}
+                    className="text-left p-4 bg-slate-100"
+                    style={{ width: `${header.getSize()}px` }}
+                  >
+                    <div
+                      className={
+                        header.column.getCanSort() ? "cursor-pointer" : ""
+                      }
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+
+                      {sortIcon}
+                    </div>
+                  </th>
+                );
+              })}
             </tr>
           ))}
         </thead>
