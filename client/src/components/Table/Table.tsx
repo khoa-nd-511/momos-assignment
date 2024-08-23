@@ -4,17 +4,18 @@ import {
   TableOptions,
   useReactTable,
 } from "@tanstack/react-table";
+import { ReactNode } from "react";
 
 interface TableProps<TData extends any = unknown> {
   data: TData[];
   columns: TableOptions<TData>["columns"];
-  loading: boolean;
+  loading: boolean | { value: boolean; node: ReactNode };
   tableProps?: Partial<TableOptions<TData>>;
   error?: any;
 }
 
 const Table = <TData = unknown,>(props: TableProps<TData>) => {
-  const { data, columns, tableProps = {} } = props;
+  const { loading, data, columns, tableProps = {} } = props;
 
   const table = useReactTable({
     data: data || [],
@@ -22,6 +23,12 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
     getCoreRowModel: getCoreRowModel(),
     ...tableProps,
   });
+
+  const _loading = typeof loading === "boolean" ? loading : loading.value;
+  let loadingIndicator = null;
+  if (typeof loading === "object" && loading.value) {
+    loadingIndicator = loading.node;
+  }
 
   return (
     <div className="p-2">
@@ -46,16 +53,21 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
             </tr>
           ))}
         </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+        <tbody className="min-h-full">
+          {_loading
+            ? loadingIndicator
+            : table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
         </tbody>
       </table>
     </div>
