@@ -39,7 +39,7 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="text-left pr-4"
+                  className="text-left px-4"
                   style={{ width: `${header.getSize()}px` }}
                 >
                   {header.isPlaceholder
@@ -59,7 +59,7 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
             : table.getRowModel().rows.map((row) => (
                 <tr key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
+                    <td key={cell.id} className="px-4 py-2">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
