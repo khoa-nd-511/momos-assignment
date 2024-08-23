@@ -38,65 +38,60 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
   }
 
   return (
-    <div className="p-2">
-      <table>
-        <thead className="sticky top-0 bg-white">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                const sort = header.column.getIsSorted();
-                const sortIcon = sort ? sortIcons[sort] : null;
-                let cursor = "";
+    <table>
+      <thead className="sticky top-0 bg-white">
+        {table.getHeaderGroups().map((headerGroup) => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map((header) => {
+              const sort = header.column.getIsSorted();
+              const sortIcon = sort ? sortIcons[sort] : null;
+              let cursor = "";
 
-                if (_loading) {
-                  cursor = "cursor-not-allowed";
-                } else if (header.column.getCanSort()) {
-                  cursor = "cursor-pointer";
-                }
+              if (_loading) {
+                cursor = "cursor-not-allowed";
+              } else if (header.column.getCanSort()) {
+                cursor = "cursor-pointer";
+              }
 
-                return (
-                  <th
-                    key={header.id}
-                    className="text-left p-4 bg-slate-100"
-                    style={{ width: `${header.getSize()}px` }}
+              return (
+                <th
+                  key={header.id}
+                  className="text-left p-4 bg-slate-100"
+                  style={{ width: `${header.getSize()}px` }}
+                >
+                  <div
+                    className={`${cursor}`}
+                    onClick={header.column.getToggleSortingHandler()}
                   >
-                    <div
-                      className={`${cursor}`}
-                      onClick={header.column.getToggleSortingHandler()}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
 
-                      {sortIcon}
-                    </div>
-                  </th>
-                );
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody className="min-h-full">
-          {_loading
-            ? loadingIndicator
-            : table.getRowModel().rows.map((row) => (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-2">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-        </tbody>
-      </table>
-    </div>
+                    {sortIcon}
+                  </div>
+                </th>
+              );
+            })}
+          </tr>
+        ))}
+      </thead>
+      <tbody className="min-h-full">
+        {_loading
+          ? loadingIndicator
+          : table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-2">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+      </tbody>
+    </table>
   );
 };
 
