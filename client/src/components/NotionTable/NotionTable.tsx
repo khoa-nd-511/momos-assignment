@@ -1,11 +1,11 @@
-interface NotionTableProps<TData = unknown> {
-  data: TData[];
+interface NotionTableProps<TData extends any = unknown> {
+  loading?: boolean;
+  data?: TData[];
+  error?: any;
 }
 
 const NotionTable = <TData = unknown,>(props: NotionTableProps<TData>) => {
-  const { data } = props;
-
-  console.log("data", data);
+  console.log(props);
   return <div>NotionTable</div>;
 };
 
