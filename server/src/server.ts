@@ -80,7 +80,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // GET request handler
-app.get("/", async (req: Request, res: Response) => {
+app.get("/tasks", async (req: Request, res: Response) => {
   const query = await notion.databases.query({
     database_id: notionDatabaseId,
   });
