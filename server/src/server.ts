@@ -17,6 +17,7 @@ const taskRowSchema = z.object({
     tags: z.object({
       multi_select: z.array(
         z.object({
+          id: z.string(),
           name: z.string(),
         })
       ),
@@ -109,7 +110,10 @@ app.get("/tasks", async (req: Request, res: Response) => {
       priority: priority.select.name,
       dueDate: dueDate.date.start,
       completed: completed.checkbox,
-      tags: tags.multi_select.map((tag) => tag.name),
+      tags: tags.multi_select.map((tag) => ({
+        name: tag.name,
+        id: tag.id,
+      })),
       estimation: estimation.number,
       description: description.rich_text[0].plain_text,
       createdAt: createdAt.date.start,
