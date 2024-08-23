@@ -3,6 +3,7 @@ require("dotenv").config();
 import express, { NextFunction, Request, Response } from "express";
 import { Client } from "@notionhq/client";
 import { z } from "zod";
+import { QueryDatabaseParameters } from "@notionhq/client/build/src/api-endpoints";
 
 const taskRowSchema = z.object({
   properties: z.object({
@@ -82,9 +83,18 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // GET request handler
 app.get("/tasks", async (req: Request, res: Response) => {
+  const sorts: QueryDatabaseParameters["sorts"] = [];
+  for (const [property, direction] of Object.entries(req.query)) {
+    if (!direction || (direction !== "ascending" && direction !== "descending"))
+      continue;
+    sorts.push({ property, direction });
+  }
+
   const query = await notion.databases.query({
     database_id: notionDatabaseId,
+    sorts,
   });
+
   const list = query.results.map((row) => {
     const parsed = taskRowSchema.safeParse(row);
 
