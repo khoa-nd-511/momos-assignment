@@ -14,6 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const columnHelper = createColumnHelper<ITask>();
 
@@ -41,8 +43,8 @@ export const columns = [
               />
 
               <Button
-                onClick={() => column.setFilterValue("")}
-                disabled={!column.getFilterValue()}
+                onClick={() => column.setFilterValue(undefined)}
+                disabled={typeof column.getFilterValue() === "undefined"}
               >
                 Clear filter
               </Button>
@@ -62,9 +64,7 @@ export const columns = [
           renderFilter={() => (
             <div className="flex flex-col gap-2">
               <Select
-                defaultValue={
-                  table.getColumn("status")?.getFilterValue() as string
-                }
+                value={table.getColumn("status")?.getFilterValue() as string}
                 onValueChange={(value) => {
                   table.getColumn("status")?.setFilterValue(value);
                 }}
@@ -79,8 +79,8 @@ export const columns = [
                 </SelectContent>
               </Select>
               <Button
-                onClick={() => column.setFilterValue("")}
-                disabled={!column.getFilterValue()}
+                onClick={() => column.setFilterValue(undefined)}
+                disabled={typeof column.getFilterValue() === "undefined"}
               >
                 Clear filter
               </Button>
@@ -98,8 +98,43 @@ export const columns = [
   }),
 
   columnHelper.accessor("completed", {
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Completed" />;
+    header: ({ table, column }) => {
+      return (
+        <DataTableColumnHeader
+          column={column}
+          title="Completed"
+          renderFilter={() => {
+            console.log(table.getColumn("completed")?.getFilterValue());
+            return (
+              <div className="flex flex-col gap-2">
+                <RadioGroup
+                  defaultValue={
+                    table.getColumn("completed")?.getFilterValue() as string
+                  }
+                  onValueChange={(value) => {
+                    table.getColumn("completed")?.setFilterValue(value);
+                  }}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="true" id="r2" />
+                    <Label htmlFor="r2">Completed</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="false" id="r3" />
+                    <Label htmlFor="r3">Not Completed</Label>
+                  </div>
+                </RadioGroup>
+                <Button
+                  onClick={() => column.setFilterValue(undefined)}
+                  disabled={typeof column.getFilterValue() === "undefined"}
+                >
+                  Clear filter
+                </Button>
+              </div>
+            );
+          }}
+        />
+      );
     },
     cell: ({ getValue }) => {
       return (
