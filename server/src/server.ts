@@ -74,6 +74,13 @@ function getPropertyQuery(property: string, value: string) {
           equals: value,
         },
       };
+    case "completed":
+      return {
+        property,
+        checkbox: {
+          equals: value === "true",
+        },
+      };
 
     default:
       throw new Error("Property not supported");
