@@ -6,6 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 const columnHelper = createColumnHelper<ITask>();
 
@@ -17,16 +25,28 @@ export const columns = [
           column={column}
           title="Name"
           renderFilter={() => (
-            <Input
-              defaultValue={table.getColumn("name")?.getFilterValue() as string}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  table
-                    .getColumn("name")
-                    ?.setFilterValue(event.currentTarget.value);
+            <div className="flex flex-col gap-2">
+              <Input
+                autoFocus
+                defaultValue={
+                  table.getColumn("name")?.getFilterValue() as string
                 }
-              }}
-            />
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    table
+                      .getColumn("name")
+                      ?.setFilterValue(event.currentTarget.value.trim());
+                  }
+                }}
+              />
+
+              <Button
+                onClick={() => column.setFilterValue("")}
+                disabled={!column.getFilterValue()}
+              >
+                Clear filter
+              </Button>
+            </div>
           )}
         />
       );
@@ -34,8 +54,40 @@ export const columns = [
   }),
 
   columnHelper.accessor("status", {
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Status" />;
+    header: ({ table, column }) => {
+      return (
+        <DataTableColumnHeader
+          column={column}
+          title="Status"
+          renderFilter={() => (
+            <div className="flex flex-col gap-2">
+              <Select
+                defaultValue={
+                  table.getColumn("status")?.getFilterValue() as string
+                }
+                onValueChange={(value) => {
+                  table.getColumn("status")?.setFilterValue(value);
+                }}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select a status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ready">Ready</SelectItem>
+                  <SelectItem value="doing">Doing</SelectItem>
+                  <SelectItem value="done">Done</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button
+                onClick={() => column.setFilterValue("")}
+                disabled={!column.getFilterValue()}
+              >
+                Clear filter
+              </Button>
+            </div>
+          )}
+        />
+      );
     },
   }),
 

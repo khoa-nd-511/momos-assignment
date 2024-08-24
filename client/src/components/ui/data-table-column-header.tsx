@@ -56,7 +56,12 @@ export function DataTableColumnHeader<TData, TValue>({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="p-2">
-              <FilterIcon size={16} />
+              <FilterIcon
+                size={16}
+                className={cn("stroke-slate-600", {
+                  "fill-slate-600": !!column.getFilterValue(),
+                })}
+              />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="px-8 py-4">
