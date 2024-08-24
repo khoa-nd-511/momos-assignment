@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import {
+  ColumnFiltersState,
   createColumnHelper,
+  getCoreRowModel,
   OnChangeFn,
   SortingState,
 } from "@tanstack/react-table";
@@ -31,23 +33,19 @@ const columnHelper = createColumnHelper<ITask>();
 const columns = [
   columnHelper.accessor("name", {
     header: "Name",
-    enableMultiSort: true,
-    cell: (props) => <span className="line-clamp-1">{props.getValue()}</span>,
+    cell: (props) => <span className="line-clamp-2">{props.getValue()}</span>,
     size: 150,
   }),
   columnHelper.accessor("status", {
     header: "Status",
-    enableMultiSort: true,
     size: 120,
   }),
   columnHelper.accessor("priority", {
     header: "Priority",
-    enableMultiSort: true,
     size: 120,
   }),
   columnHelper.accessor("completed", {
     header: "Completed",
-    enableSorting: false,
     cell: (props) => (
       <input
         type="checkbox"
@@ -55,11 +53,10 @@ const columns = [
         onChange={() => alert("not implemented")}
       />
     ),
-    size: 130,
+    size: 140,
   }),
   columnHelper.accessor("dueDate", {
     header: "Due Date",
-    enableMultiSort: true,
     cell: (props) => formatDate(props.getValue()),
     size: 130,
   }),
@@ -75,9 +72,8 @@ const columns = [
     size: 250,
   }),
   columnHelper.accessor("estimation", {
-    enableMultiSort: true,
     header: "Estimation",
-    size: 130,
+    size: 140,
   }),
   columnHelper.accessor("description", {
     header: "Description",
@@ -87,7 +83,6 @@ const columns = [
   }),
   columnHelper.accessor("createdAt", {
     header: "Created At",
-    enableMultiSort: true,
     cell: (props) => formatDate(props.getValue()),
     size: 130,
   }),
@@ -108,6 +103,7 @@ const initialColumnsOrder = [
 const TasksTable = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnOrder, setColumnOrder] = useState<string[]>(initialColumnsOrder);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const { data = [], loading, error, load } = useLoader(getTasks);
 
@@ -118,33 +114,36 @@ const TasksTable = () => {
 
   useEffect(() => {
     load({ sorting });
-  }, [sorting]);
+  }, [sorting, columnFilters]);
 
   return (
     <Table
-      data={data}
       enableDragging
       loading={{
         value: loading,
         node: <TaskLoadingIndicator />,
       }}
       error={error}
+      // table props
+      getCoreRowModel={getCoreRowModel()}
+      data={data}
       columns={columns}
-      tableProps={{
-        defaultColumn: {
-          size: 150,
-          minSize: 50,
-          maxSize: 500,
-        },
-        enableMultiSort: true,
-        state: {
-          sorting,
-          columnOrder,
-        },
-        isMultiSortEvent: () => true,
-        onSortingChange: handleSortingChange,
-        onColumnOrderChange: setColumnOrder,
+      defaultColumn={{
+        size: 150,
+        minSize: 50,
+        maxSize: 500,
       }}
+      state={{
+        sorting,
+        columnOrder,
+        columnFilters,
+      }}
+      enableSorting
+      enableMultiSort
+      isMultiSortEvent={() => true}
+      onSortingChange={handleSortingChange}
+      onColumnOrderChange={setColumnOrder}
+      onColumnFiltersChange={setColumnFilters}
     />
   );
 };

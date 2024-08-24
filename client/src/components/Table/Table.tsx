@@ -1,16 +1,8 @@
-import {
-  flexRender,
-  getCoreRowModel,
-  TableOptions,
-  useReactTable,
-} from "@tanstack/react-table";
+import { flexRender, TableOptions, useReactTable } from "@tanstack/react-table";
 import { DragEventHandler, ElementRef, ReactNode, useRef } from "react";
 
-interface TableProps<TData extends any = unknown> {
-  data: TData[];
-  columns: TableOptions<TData>["columns"];
+interface TableProps<TData extends any = unknown> extends TableOptions<TData> {
   loading: boolean | { value: boolean; node: ReactNode };
-  tableProps?: Partial<TableOptions<TData>>;
   error?: any;
   sortIcons?: Record<string, ReactNode>;
   enableDragging?: boolean;
@@ -19,23 +11,16 @@ interface TableProps<TData extends any = unknown> {
 const Table = <TData = unknown,>(props: TableProps<TData>) => {
   const {
     loading,
-    data,
-    columns,
-    tableProps = {},
     sortIcons = { asc: " 🔼", desc: " 🔽" },
     enableDragging,
+    ...tableProps
   } = props;
 
   const dragFromRef = useRef<ElementRef<"th"> | null>(null);
   const dragToRef = useRef<ElementRef<"th"> | null>(null);
   const dragToOverlayRef = useRef<ElementRef<"div"> | null>(null);
 
-  const table = useReactTable({
-    data: data || [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    ...tableProps,
-  });
+  const table = useReactTable(tableProps);
 
   const _loading = typeof loading === "boolean" ? loading : loading.value;
   let loadingIndicator = null;
@@ -143,7 +128,7 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
                     key={header.id}
                     data-id={header.id}
                     data-index={headerIndex}
-                    className="text-left p-4 bg-slate-100"
+                    className="text-left bg-slate-100"
                     style={{ width: header.getSize() }}
                     draggable={enableDragging}
                     onDragStart={handleDragStart}
@@ -152,7 +137,7 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
                     onDragLeave={handleDragLeave}
                   >
                     <div
-                      className={`${cursor}`}
+                      className={`p-4 ${cursor}`}
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       {header.isPlaceholder
@@ -179,7 +164,7 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
-                      className="px-4 py-2"
+                      className="px-4 py-2 align-top"
                       style={{ width: cell.column.getSize() }}
                     >
                       {flexRender(
