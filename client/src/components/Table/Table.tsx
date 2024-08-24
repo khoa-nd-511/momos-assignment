@@ -1,10 +1,10 @@
 import { flexRender, TableOptions, useReactTable } from "@tanstack/react-table";
 import { DragEventHandler, ElementRef, ReactNode, useRef } from "react";
-import HeaderCell from "./HeaderCell";
+import HeaderCell from "./TableHeaderCell";
 
-interface TableProps<TData extends any = unknown> extends TableOptions<TData> {
+interface TableProps<TData = unknown> extends TableOptions<TData> {
   loading: boolean | { value: boolean; node: ReactNode };
-  error?: any;
+  error?: unknown;
   sortIcons?: Record<string, ReactNode>;
   enableDragging?: boolean;
 }

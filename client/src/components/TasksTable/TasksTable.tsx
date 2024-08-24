@@ -13,6 +13,7 @@ import { getTasks } from "../../lib/services/task";
 import Table from "../Table";
 import { formatDate } from "../../lib/utils";
 import Tag from "../Tag";
+import TableFilterInput from "../Table/TableFilterInput";
 
 const TaskLoadingIndicator = () =>
   Array.from({ length: 5 }).map((_, row) => (
@@ -35,6 +36,12 @@ const columns = [
     header: "Name",
     cell: (props) => <span className="line-clamp-2">{props.getValue()}</span>,
     size: 150,
+    meta: {
+      filterable: true,
+      filterLabel: "Search by name",
+      filterIcon: "🔍",
+      filterRender: TableFilterInput,
+    },
   }),
   columnHelper.accessor("status", {
     header: "Status",
@@ -115,7 +122,7 @@ const TasksTable = () => {
 
   useEffect(() => {
     load({ sorts: sorting, filters: columnFilters });
-  }, [sorting, columnFilters]);
+  }, [sorting, columnFilters, load]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -148,6 +155,7 @@ const TasksTable = () => {
         enableFilters
         enableSorting
         enableMultiSort
+        enableColumnFilters
         isMultiSortEvent={() => true}
         onSortingChange={handleSortingChange}
         onColumnOrderChange={setColumnOrder}

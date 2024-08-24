@@ -1,7 +1,8 @@
 import { flexRender, Header } from "@tanstack/react-table";
 import { DragEventHandler, ReactNode } from "react";
+import Dropdown from "../Dropdown";
 
-interface HeaderCellProps<TData = unknown> extends Header<TData, unknown> {
+interface TableHeaderCellProps<TData = unknown> extends Header<TData, unknown> {
   sortIcon: ReactNode | null;
   loading: boolean;
   enableDragging?: boolean;
@@ -10,7 +11,7 @@ interface HeaderCellProps<TData = unknown> extends Header<TData, unknown> {
   onDragEnter?: DragEventHandler<HTMLTableCellElement>;
 }
 
-const HeaderCell = <TData,>(props: HeaderCellProps<TData>) => {
+const TableHeaderCell = <TData,>(props: TableHeaderCellProps<TData>) => {
   const {
     loading,
     id,
@@ -25,6 +26,16 @@ const HeaderCell = <TData,>(props: HeaderCellProps<TData>) => {
     onDragEnter,
     onDragStart,
   } = props;
+
+  let fitlerIcon = null;
+  let filterLabel = "Search";
+
+  if (column.getCanFilter() && column.columnDef.meta) {
+    filterLabel = column.columnDef.meta.filterLabel
+      ? column.columnDef.meta.filterLabel
+      : filterLabel;
+    fitlerIcon = column.columnDef.meta.filterIcon;
+  }
 
   let cursor = "";
 
@@ -52,10 +63,22 @@ const HeaderCell = <TData,>(props: HeaderCellProps<TData>) => {
         {isPlaceholder
           ? null
           : flexRender(column.columnDef.header, getContext())}
+        {column.columnDef.meta?.filterable ? (
+          <Dropdown>
+            <Dropdown.Triggerer>
+              <span role="botton">&nbsp;{fitlerIcon}</span>
+            </Dropdown.Triggerer>
+
+            <Dropdown.Content>
+              <label htmlFor={id}>{filterLabel}</label>
+              {column.columnDef.meta?.filterRender?.(getContext())}
+            </Dropdown.Content>
+          </Dropdown>
+        ) : null}
         &nbsp;{sortIcon}
       </div>
     </th>
   );
 };
 
-export default HeaderCell;
+export default TableHeaderCell;

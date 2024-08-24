@@ -14,3 +14,8 @@ export interface ITask {
   completed: boolean;
   tags: ITag[];
 }
+
+export type TTaskFilter = {
+  id: string;
+  value: Record<string, string> | string;
+};

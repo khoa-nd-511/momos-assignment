@@ -83,11 +83,22 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // GET request handler
 app.get("/tasks", async (req: Request, res: Response) => {
+  const rawSort = String(req.query.sort) || "";
+
   const sorts: QueryDatabaseParameters["sorts"] = [];
-  for (const [property, direction] of Object.entries(req.query)) {
-    if (!direction || (direction !== "ascending" && direction !== "descending"))
-      continue;
-    sorts.push({ property, direction });
+
+  for (const property of rawSort.split(",")) {
+    if (property.startsWith("-")) {
+      sorts.push({
+        property: property.slice(1),
+        direction: "descending",
+      });
+    } else {
+      sorts.push({
+        property: property,
+        direction: "ascending",
+      });
+    }
   }
 
   const query = await notion.databases.query({
