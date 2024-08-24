@@ -70,6 +70,7 @@ const columns = [
       </div>
     ),
     size: 250,
+    enableSorting: false,
   }),
   columnHelper.accessor("estimation", {
     header: "Estimation",
@@ -113,38 +114,46 @@ const TasksTable = () => {
   };
 
   useEffect(() => {
-    load({ sorting });
+    load({ sorts: sorting, filters: columnFilters });
   }, [sorting, columnFilters]);
 
   return (
-    <Table
-      enableDragging
-      loading={{
-        value: loading,
-        node: <TaskLoadingIndicator />,
-      }}
-      error={error}
-      // table props
-      getCoreRowModel={getCoreRowModel()}
-      data={data}
-      columns={columns}
-      defaultColumn={{
-        size: 150,
-        minSize: 50,
-        maxSize: 500,
-      }}
-      state={{
-        sorting,
-        columnOrder,
-        columnFilters,
-      }}
-      enableSorting
-      enableMultiSort
-      isMultiSortEvent={() => true}
-      onSortingChange={handleSortingChange}
-      onColumnOrderChange={setColumnOrder}
-      onColumnFiltersChange={setColumnFilters}
-    />
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center space-between">
+        {loading ? <span>loading...</span> : <span>{data.length} items</span>}
+        {columnFilters.length > 0 ? <button>clear filters</button> : null}
+      </div>
+      <Table
+        // custom props
+        enableDragging
+        loading={{
+          value: loading,
+          node: <TaskLoadingIndicator />,
+        }}
+        error={error}
+        // table props
+        getCoreRowModel={getCoreRowModel()}
+        data={data}
+        columns={columns}
+        defaultColumn={{
+          size: 150,
+          minSize: 50,
+          maxSize: 500,
+        }}
+        state={{
+          sorting,
+          columnOrder,
+          columnFilters,
+        }}
+        enableFilters
+        enableSorting
+        enableMultiSort
+        isMultiSortEvent={() => true}
+        onSortingChange={handleSortingChange}
+        onColumnOrderChange={setColumnOrder}
+        onColumnFiltersChange={setColumnFilters}
+      />
+    </div>
   );
 };
 
