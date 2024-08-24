@@ -28,6 +28,7 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
 
   const dragFromRef = useRef<ElementRef<"th"> | null>(null);
   const dragToRef = useRef<ElementRef<"th"> | null>(null);
+  const dragToOverlayRef = useRef<ElementRef<"div"> | null>(null);
 
   const table = useReactTable({
     data: data || [],
@@ -46,15 +47,28 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
     if (!enableDragging) return;
 
     dragFromRef.current = e.currentTarget;
-    e.currentTarget.style.setProperty("border", "2px dashed #888");
   };
 
   const handleDragEnter: DragEventHandler<HTMLTableCellElement> = (e) => {
     if (!enableDragging) return;
 
-    e.currentTarget.style.setProperty("border", "2px dashed #888");
-
     dragToRef.current = e.currentTarget;
+
+    if (dragToOverlayRef.current) {
+      const headerGroup = table.getHeaderGroups()[0];
+      let left = 0;
+      for (const header of headerGroup.headers) {
+        if (header.id === e.currentTarget.getAttribute("data-id")) break;
+        left += header.getSize();
+      }
+
+      dragToOverlayRef.current.style.setProperty("opacity", "100");
+      dragToOverlayRef.current.style.setProperty("left", left + "px");
+      dragToOverlayRef.current.style.setProperty(
+        "width",
+        e.currentTarget.clientWidth.toString() + "px"
+      );
+    }
   };
 
   const handleDragLeave: DragEventHandler<HTMLTableCellElement> = (e) => {
@@ -67,6 +81,11 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
 
   const handleDragEnd: DragEventHandler<HTMLTableCellElement> = () => {
     if (!enableDragging || !dragFromRef.current || !dragToRef.current) return;
+
+    if (dragToOverlayRef.current) {
+      dragToOverlayRef.current.style.setProperty("opacity", "0");
+      dragToOverlayRef.current.style.setProperty("width", "0px");
+    }
 
     const from = dragFromRef.current.getAttribute("data-index");
     const to = dragToRef.current.getAttribute("data-index");
@@ -100,6 +119,10 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
 
   return (
     <div className="relative">
+      <div
+        ref={dragToOverlayRef}
+        className="absolute left-0 top-0 h-full border-dashed border-2 opacity-0 border-slate-500 bg-slate-600/10"
+      />
       <table style={{ width: table.getTotalSize() }}>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (

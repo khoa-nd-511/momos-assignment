@@ -33,14 +33,17 @@ const columns = [
     header: "Name",
     enableMultiSort: true,
     cell: (props) => <span className="line-clamp-1">{props.getValue()}</span>,
+    size: 150,
   }),
   columnHelper.accessor("status", {
     header: "Status",
     enableMultiSort: true,
+    size: 120,
   }),
   columnHelper.accessor("priority", {
     header: "Priority",
     enableMultiSort: true,
+    size: 120,
   }),
   columnHelper.accessor("completed", {
     header: "Completed",
@@ -52,11 +55,13 @@ const columns = [
         onChange={() => alert("not implemented")}
       />
     ),
+    size: 130,
   }),
   columnHelper.accessor("dueDate", {
     header: "Due Date",
     enableMultiSort: true,
     cell: (props) => formatDate(props.getValue()),
+    size: 130,
   }),
   columnHelper.accessor("tags", {
     header: "Tags",
@@ -67,20 +72,24 @@ const columns = [
         ))}
       </div>
     ),
+    size: 250,
   }),
   columnHelper.accessor("estimation", {
     enableMultiSort: true,
     header: "Estimation",
+    size: 130,
   }),
   columnHelper.accessor("description", {
     header: "Description",
     enableSorting: false,
     cell: (props) => <span className="line-clamp-1">{props.getValue()}</span>,
+    size: 150,
   }),
   columnHelper.accessor("createdAt", {
     header: "Created At",
     enableMultiSort: true,
     cell: (props) => formatDate(props.getValue()),
+    size: 130,
   }),
 ];
 
