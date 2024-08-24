@@ -554,6 +554,10 @@ video {
   --tw-contain-style:  ;
 }
 
+.relative {
+  position: relative;
+}
+
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
@@ -584,6 +588,10 @@ video {
 
 .h-\[26px\] {
   height: 26px;
+}
+
+.h-\[24px\] {
+  height: 24px;
 }
 
 .min-h-full {

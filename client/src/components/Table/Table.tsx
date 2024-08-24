@@ -99,68 +99,77 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
   };
 
   return (
-    <table>
-      <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header, headerIndex) => {
-              const sort = header.column.getIsSorted();
-              const sortIcon = sort ? sortIcons[sort] : null;
-              let cursor = "";
+    <div className="relative">
+      <table style={{ width: table.getTotalSize() }}>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header, headerIndex) => {
+                const sort = header.column.getIsSorted();
+                const sortIcon = sort ? sortIcons[sort] : null;
+                let cursor = "";
 
-              if (_loading) {
-                cursor = "cursor-not-allowed";
-              } else if (header.column.getCanSort()) {
-                cursor = "cursor-pointer";
-              }
+                if (_loading) {
+                  cursor = "cursor-not-allowed";
+                } else if (header.column.getCanSort()) {
+                  cursor = "cursor-pointer";
+                }
 
-              return (
-                <th
-                  key={header.id}
-                  data-id={header.id}
-                  data-index={headerIndex}
-                  className="text-left p-4 bg-slate-100"
-                  style={{ width: `${header.getSize()}px` }}
-                  draggable={enableDragging}
-                  onDragStart={handleDragStart}
-                  onDragEnd={handleDragEnd}
-                  onDragEnter={handleDragEnter}
-                  onDragLeave={handleDragLeave}
-                >
-                  <div
-                    className={`${cursor}`}
-                    onClick={header.column.getToggleSortingHandler()}
+                return (
+                  <th
+                    key={header.id}
+                    data-id={header.id}
+                    data-index={headerIndex}
+                    className="text-left p-4 bg-slate-100"
+                    style={{ width: header.getSize() }}
+                    draggable={enableDragging}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    onDragEnter={handleDragEnter}
+                    onDragLeave={handleDragLeave}
                   >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                    <div
+                      className={`${cursor}`}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
 
-                    {sortIcon}
-                  </div>
-                </th>
-              );
-            })}
-          </tr>
-        ))}
-      </thead>
+                      {sortIcon}
+                    </div>
+                  </th>
+                );
+              })}
+            </tr>
+          ))}
+        </thead>
 
-      <tbody className="min-h-full">
-        {_loading
-          ? loadingIndicator
-          : table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-2">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-      </tbody>
-    </table>
+        <tbody className="min-h-full">
+          {_loading
+            ? loadingIndicator
+            : table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className="px-4 py-2"
+                      style={{ width: cell.column.getSize() }}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
