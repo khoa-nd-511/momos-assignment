@@ -1,15 +1,16 @@
+import { useEffect, useState } from "react";
 import {
   createColumnHelper,
   OnChangeFn,
   SortingState,
 } from "@tanstack/react-table";
+
 import { ITask } from "../../lib/types";
 import { useLoader } from "../../lib/hooks";
 import { getTasks } from "../../lib/services/task";
 import Table from "../Table";
 import { formatDate } from "../../lib/utils";
 import Tag from "../Tag";
-import { useEffect, useState } from "react";
 
 const TaskLoadingIndicator = () =>
   Array.from({ length: 5 }).map((_, row) => (
@@ -83,8 +84,21 @@ const columns = [
   }),
 ];
 
+const initialColumnsOrder = [
+  "name",
+  "status",
+  "priority",
+  "completed",
+  "dueDate",
+  "tags",
+  "estimation",
+  "description",
+  "createdAt",
+];
+
 const TasksTable = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnOrder, setColumnOrder] = useState<string[]>(initialColumnsOrder);
 
   const { data = [], loading, error, load } = useLoader(getTasks);
 
@@ -100,6 +114,7 @@ const TasksTable = () => {
   return (
     <Table
       data={data}
+      enableDragging
       loading={{
         value: loading,
         node: <TaskLoadingIndicator />,
@@ -107,17 +122,19 @@ const TasksTable = () => {
       error={error}
       columns={columns}
       tableProps={{
-        isMultiSortEvent: () => true,
-        enableMultiSort: true,
         defaultColumn: {
           size: 150,
           minSize: 50,
           maxSize: 500,
         },
-        onSortingChange: handleSortingChange,
+        enableMultiSort: true,
         state: {
           sorting,
+          columnOrder,
         },
+        isMultiSortEvent: () => true,
+        onSortingChange: handleSortingChange,
+        onColumnOrderChange: setColumnOrder,
       }}
     />
   );

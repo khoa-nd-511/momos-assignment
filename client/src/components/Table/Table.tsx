@@ -4,7 +4,7 @@ import {
   TableOptions,
   useReactTable,
 } from "@tanstack/react-table";
-import { ReactNode } from "react";
+import { DragEventHandler, ElementRef, ReactNode, useRef } from "react";
 
 interface TableProps<TData extends any = unknown> {
   data: TData[];
@@ -13,6 +13,7 @@ interface TableProps<TData extends any = unknown> {
   tableProps?: Partial<TableOptions<TData>>;
   error?: any;
   sortIcons?: Record<string, ReactNode>;
+  enableDragging?: boolean;
 }
 
 const Table = <TData = unknown,>(props: TableProps<TData>) => {
@@ -22,7 +23,11 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
     columns,
     tableProps = {},
     sortIcons = { asc: " 🔼", desc: " 🔽" },
+    enableDragging,
   } = props;
+
+  const dragFromRef = useRef<ElementRef<"th"> | null>(null);
+  const dragToRef = useRef<ElementRef<"th"> | null>(null);
 
   const table = useReactTable({
     data: data || [],
@@ -37,12 +42,68 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
     loadingIndicator = loading.node;
   }
 
+  const handleDragStart: DragEventHandler<HTMLTableCellElement> = (e) => {
+    if (!enableDragging) return;
+
+    dragFromRef.current = e.currentTarget;
+    e.currentTarget.style.setProperty("border", "2px dashed #888");
+  };
+
+  const handleDragEnter: DragEventHandler<HTMLTableCellElement> = (e) => {
+    if (!enableDragging) return;
+
+    e.currentTarget.style.setProperty("border", "2px dashed #888");
+
+    dragToRef.current = e.currentTarget;
+  };
+
+  const handleDragLeave: DragEventHandler<HTMLTableCellElement> = (e) => {
+    if (!enableDragging) return;
+
+    if (e.currentTarget === dragFromRef.current) return;
+
+    e.currentTarget.style.setProperty("border", null);
+  };
+
+  const handleDragEnd: DragEventHandler<HTMLTableCellElement> = () => {
+    if (!enableDragging || !dragFromRef.current || !dragToRef.current) return;
+
+    const from = dragFromRef.current.getAttribute("data-index");
+    const to = dragToRef.current.getAttribute("data-index");
+
+    if (!from || !to || from === to) return;
+
+    dragFromRef.current.style.setProperty("border", null);
+    dragFromRef.current = null;
+
+    const fromIndex = Number(from);
+    const toIndex = Number(to);
+
+    table.setColumnOrder((orderState) => {
+      const newState = [];
+      for (let i = 0; i < orderState.length; i++) {
+        if (i === fromIndex) continue;
+
+        if (i === toIndex && fromIndex > toIndex) {
+          newState.push(orderState[fromIndex]);
+        }
+
+        newState.push(orderState[i]);
+
+        if (i === toIndex && fromIndex < toIndex) {
+          newState.push(orderState[fromIndex]);
+        }
+      }
+      return newState;
+    });
+  };
+
   return (
     <table>
-      <thead className="sticky top-0 bg-white">
+      <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => {
+            {headerGroup.headers.map((header, headerIndex) => {
               const sort = header.column.getIsSorted();
               const sortIcon = sort ? sortIcons[sort] : null;
               let cursor = "";
@@ -56,8 +117,15 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
               return (
                 <th
                   key={header.id}
+                  data-id={header.id}
+                  data-index={headerIndex}
                   className="text-left p-4 bg-slate-100"
                   style={{ width: `${header.getSize()}px` }}
+                  draggable={enableDragging}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
                 >
                   <div
                     className={`${cursor}`}
@@ -78,6 +146,7 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
           </tr>
         ))}
       </thead>
+
       <tbody className="min-h-full">
         {_loading
           ? loadingIndicator
