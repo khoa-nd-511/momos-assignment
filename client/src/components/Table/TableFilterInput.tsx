@@ -1,9 +1,7 @@
 import { HeaderContext } from "@tanstack/react-table";
 import { useState } from "react";
 
-interface TableFilterInputProps<TData> extends HeaderContext<TData, unknown> {
-  test?: number;
-}
+type TableFilterInputProps<TData> = HeaderContext<TData, unknown>;
 
 const TableFilterInput = <TData,>(props: TableFilterInputProps<TData>) => {
   const { table, header } = props;

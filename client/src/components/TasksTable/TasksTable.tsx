@@ -125,43 +125,46 @@ const TasksTable = () => {
   }, [sorting, columnFilters, load]);
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center space-between">
-        {loading ? <span>loading...</span> : <span>{data.length} items</span>}
+    <>
+      <div className="flex items-center justify-between w-full">
+        {loading ? <div>loading...</div> : <div>{data.length} items</div>}
         {columnFilters.length > 0 ? <button>clear filters</button> : null}
       </div>
-      <Table
-        // custom props
-        enableDragging
-        loading={{
-          value: loading,
-          node: <TaskLoadingIndicator />,
-        }}
-        error={error}
-        // table props
-        getCoreRowModel={getCoreRowModel()}
-        data={data}
-        columns={columns}
-        defaultColumn={{
-          size: 150,
-          minSize: 50,
-          maxSize: 500,
-        }}
-        state={{
-          sorting,
-          columnOrder,
-          columnFilters,
-        }}
-        enableFilters
-        enableSorting
-        enableMultiSort
-        enableColumnFilters
-        isMultiSortEvent={() => true}
-        onSortingChange={handleSortingChange}
-        onColumnOrderChange={setColumnOrder}
-        onColumnFiltersChange={setColumnFilters}
-      />
-    </div>
+
+      <div className="overflow-x-auto mt-5">
+        <Table
+          // custom props
+          enableDragging
+          loading={{
+            value: loading,
+            node: <TaskLoadingIndicator />,
+          }}
+          error={error}
+          // table props
+          getCoreRowModel={getCoreRowModel()}
+          data={data}
+          columns={columns}
+          defaultColumn={{
+            size: 150,
+            minSize: 50,
+            maxSize: 500,
+          }}
+          state={{
+            sorting,
+            columnOrder,
+            columnFilters,
+          }}
+          enableFilters
+          enableSorting
+          enableMultiSort
+          enableColumnFilters
+          isMultiSortEvent={() => true}
+          onSortingChange={handleSortingChange}
+          onColumnOrderChange={setColumnOrder}
+          onColumnFiltersChange={setColumnFilters}
+        />
+      </div>
+    </>
   );
 };
 
