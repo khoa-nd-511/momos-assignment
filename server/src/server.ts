@@ -67,6 +67,13 @@ function getPropertyQuery(property: string, value: string) {
           contains: value,
         },
       };
+    case "status":
+      return {
+        property,
+        select: {
+          equals: value,
+        },
+      };
 
     default:
       throw new Error("Property not supported");
@@ -128,6 +135,7 @@ app.get("/tasks", async (req: Request, res: Response) => {
       filter.and.push(getPropertyQuery(key, value));
     }
   });
+  console.log("filter", filter.and);
 
   const query = await notion.databases.query({
     database_id: notionDatabaseId,
