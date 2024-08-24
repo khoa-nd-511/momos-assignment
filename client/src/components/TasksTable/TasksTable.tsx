@@ -1,100 +1,17 @@
 import { useEffect, useState } from "react";
 import {
   ColumnFiltersState,
-  createColumnHelper,
   getCoreRowModel,
   OnChangeFn,
   SortingState,
 } from "@tanstack/react-table";
 
-import { ITask } from "../../lib/types";
-import { useLoader } from "../../lib/hooks";
-import { getTasks } from "../../lib/services/task";
-import Table from "../Table";
-import { formatDate } from "../../lib/utils";
-import Tag from "../Tag";
-import TableFilterInput from "../Table/TableFilterInput";
-
-const TaskLoadingIndicator = () =>
-  Array.from({ length: 5 }).map((_, row) => (
-    <tr key={row}>
-      {Array.from({ length: 9 }).map((_, col) => (
-        <td key={col} className="p-4">
-          <span
-            className="inline-block h-[26px] bg-slate-300 rounded-md"
-            style={{ width: Math.random() * 50 + 50 }}
-          />
-        </td>
-      ))}
-    </tr>
-  ));
-
-const columnHelper = createColumnHelper<ITask>();
-
-const columns = [
-  columnHelper.accessor("name", {
-    header: "Name",
-    cell: (props) => <span className="line-clamp-2">{props.getValue()}</span>,
-    size: 150,
-    meta: {
-      filterable: true,
-      filterLabel: "Search by name",
-      filterIcon: "🔍",
-      filterRender: TableFilterInput,
-    },
-  }),
-  columnHelper.accessor("status", {
-    header: "Status",
-    size: 120,
-  }),
-  columnHelper.accessor("priority", {
-    header: "Priority",
-    size: 120,
-  }),
-  columnHelper.accessor("completed", {
-    header: "Completed",
-    cell: (props) => (
-      <input
-        type="checkbox"
-        checked={props.getValue()}
-        onChange={() => alert("not implemented")}
-      />
-    ),
-    size: 140,
-  }),
-  columnHelper.accessor("dueDate", {
-    header: "Due Date",
-    cell: (props) => formatDate(props.getValue()),
-    size: 130,
-  }),
-  columnHelper.accessor("tags", {
-    header: "Tags",
-    cell: (props) => (
-      <div className="flex flex-wrap gap-2 w-[200px]">
-        {props.getValue().map(({ id, name }) => (
-          <Tag key={id} label={name} />
-        ))}
-      </div>
-    ),
-    size: 250,
-    enableSorting: false,
-  }),
-  columnHelper.accessor("estimation", {
-    header: "Estimation",
-    size: 140,
-  }),
-  columnHelper.accessor("description", {
-    header: "Description",
-    enableSorting: false,
-    cell: (props) => <span className="line-clamp-1">{props.getValue()}</span>,
-    size: 150,
-  }),
-  columnHelper.accessor("createdAt", {
-    header: "Created At",
-    cell: (props) => formatDate(props.getValue()),
-    size: 130,
-  }),
-];
+import { Button } from "@/components/ui/button";
+import { useLoader } from "@/lib/hooks";
+import { getTasks } from "@/lib/services/task";
+import { DataTable } from "@/components/ui/data-table";
+import { columns } from "@/components/TasksTable/columns";
+import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 
 const initialColumnsOrder = [
   "name",
@@ -127,41 +44,44 @@ const TasksTable = () => {
   return (
     <>
       <div className="flex items-center justify-between w-full">
-        {loading ? <div>loading...</div> : <div>{data.length} items</div>}
-        {columnFilters.length > 0 ? <button>clear filters</button> : null}
+        {loading ? <div>Loading Tasks...</div> : <div>{data.length} items</div>}
+        {columnFilters.length > 0 ? <Button>Clear Filters</Button> : null}
       </div>
 
       <div className="overflow-x-auto mt-5">
-        <Table
+        <DataTable
           // custom props
           enableDragging
-          loading={{
-            value: loading,
-            node: <TaskLoadingIndicator />,
-          }}
+          loading={loading}
           error={error}
           // table props
           getCoreRowModel={getCoreRowModel()}
           data={data}
           columns={columns}
-          defaultColumn={{
-            size: 150,
-            minSize: 50,
-            maxSize: 500,
-          }}
+          // defaultColumn={{
+          //   size: 200,
+          //   minSize: 50,
+          //   maxSize: 500,
+          // }}
           state={{
             sorting,
             columnOrder,
             columnFilters,
           }}
-          enableFilters
           enableSorting
           enableMultiSort
+          enableFilters
           enableColumnFilters
           isMultiSortEvent={() => true}
           onSortingChange={handleSortingChange}
           onColumnOrderChange={setColumnOrder}
           onColumnFiltersChange={setColumnFilters}
+          meta={{
+            sortIcons: {
+              asc: <ArrowUpIcon />,
+              desc: <ArrowDownIcon />,
+            },
+          }}
         />
       </div>
     </>
