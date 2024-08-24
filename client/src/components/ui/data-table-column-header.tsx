@@ -7,17 +7,26 @@ import { Column } from "@tanstack/react-table";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { FilterIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ReactNode } from "react";
 
 interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>;
   title: string;
+  renderFilter?: () => ReactNode;
 }
 
 export function DataTableColumnHeader<TData, TValue>({
   column,
   title,
   className,
+  renderFilter,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
     return <div className={cn(className)}>{title}</div>;
@@ -26,12 +35,13 @@ export function DataTableColumnHeader<TData, TValue>({
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <span>{title}</span>
+
       <Button
         variant="ghost"
-        onClick={() =>
-          column.toggleSorting(undefined, column.getCanMultiSort())
-        }
         className="p-2"
+        onClick={() => {
+          column.toggleSorting(undefined, column.getCanMultiSort());
+        }}
       >
         {column.getIsSorted() === "desc" ? (
           <ArrowDownIcon className="h-4 w-4" />
@@ -41,6 +51,19 @@ export function DataTableColumnHeader<TData, TValue>({
           <CaretSortIcon className="h-4 w-4" />
         )}
       </Button>
+
+      {!!renderFilter && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="p-2">
+              <FilterIcon size={16} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="px-8 py-4">
+            {renderFilter()}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
     </div>
   );
 }

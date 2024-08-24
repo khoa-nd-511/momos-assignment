@@ -6,7 +6,6 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button";
 import { useLoader } from "@/lib/hooks";
 import { getTasks } from "@/lib/services/task";
 import { DataTable } from "@/components/ui/data-table";
@@ -45,7 +44,6 @@ const TasksTable = () => {
     <>
       <div className="flex items-center justify-between w-full">
         {loading ? <div>Loading Tasks...</div> : <div>{data.length} items</div>}
-        {columnFilters.length > 0 ? <Button>Clear Filters</Button> : null}
       </div>
 
       <div className="overflow-x-auto mt-5">

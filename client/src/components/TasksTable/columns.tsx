@@ -5,13 +5,31 @@ import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/ui/data-table-column-header";
+import { Input } from "@/components/ui/input";
 
 const columnHelper = createColumnHelper<ITask>();
 
 export const columns = [
   columnHelper.accessor("name", {
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Name" />;
+    header: ({ table, column }) => {
+      return (
+        <DataTableColumnHeader
+          column={column}
+          title="Name"
+          renderFilter={() => (
+            <Input
+              defaultValue={table.getColumn("name")?.getFilterValue() as string}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  table
+                    .getColumn("name")
+                    ?.setFilterValue(event.currentTarget.value);
+                }
+              }}
+            />
+          )}
+        />
+      );
     },
   }),
 
