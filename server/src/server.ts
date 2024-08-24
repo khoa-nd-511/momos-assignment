@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, raw, Request, Response } from "express";
 import { Client } from "@notionhq/client";
 import { z } from "zod";
 import { QueryDatabaseParameters } from "@notionhq/client/build/src/api-endpoints";
@@ -58,6 +58,21 @@ const taskRowSchema = z.object({
   }),
 });
 
+function getPropertyQuery(property: string, value: string) {
+  switch (property) {
+    case "name":
+      return {
+        property,
+        rich_text: {
+          contains: value,
+        },
+      };
+
+    default:
+      throw new Error("Property not supported");
+  }
+}
+
 // The dotenv library will read from your .env file into these values on `process.env`
 const notionDatabaseId = process.env.NOTION_DB_ID;
 const notionSecret = process.env.NOTION_SECRET;
@@ -83,27 +98,41 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // GET request handler
 app.get("/tasks", async (req: Request, res: Response) => {
-  const rawSort = String(req.query.sort) || "";
+  const rawSort = req.query.sort ? String(req.query.sort) : "";
+  const rawFilter = req.query.filter || {};
 
   const sorts: QueryDatabaseParameters["sorts"] = [];
 
-  for (const property of rawSort.split(",")) {
-    if (property.startsWith("-")) {
-      sorts.push({
-        property: property.slice(1),
-        direction: "descending",
-      });
-    } else {
-      sorts.push({
-        property: property,
-        direction: "ascending",
-      });
+  if (rawSort) {
+    for (const property of rawSort.split(",")) {
+      if (property.startsWith("-")) {
+        sorts.push({
+          property: property.slice(1),
+          direction: "descending",
+        });
+      } else {
+        sorts.push({
+          property: property,
+          direction: "ascending",
+        });
+      }
     }
   }
+
+  const filter: QueryDatabaseParameters["filter"] = {
+    and: [],
+  };
+
+  Object.entries(rawFilter).forEach(([key, value]) => {
+    if (typeof value === "string") {
+      filter.and.push(getPropertyQuery(key, value));
+    }
+  });
 
   const query = await notion.databases.query({
     database_id: notionDatabaseId,
     sorts,
+    filter,
   });
 
   const list = query.results.map((row) => {

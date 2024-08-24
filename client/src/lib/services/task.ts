@@ -16,6 +16,6 @@ export async function getTasks({
   }
   const queryString = constructQueryString(sorts, filters);
 
-  const res = await fetch(`http://localhost:3000/tasks?${queryString}`);
+  const res = await fetch(`http://localhost:3000/tasks${queryString}`);
   return res.json();
 }
