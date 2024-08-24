@@ -1,5 +1,6 @@
 import { flexRender, TableOptions, useReactTable } from "@tanstack/react-table";
 import { DragEventHandler, ElementRef, ReactNode, useRef } from "react";
+import HeaderCell from "./HeaderCell";
 
 interface TableProps<TData extends any = unknown> extends TableOptions<TData> {
   loading: boolean | { value: boolean; node: ReactNode };
@@ -11,7 +12,7 @@ interface TableProps<TData extends any = unknown> extends TableOptions<TData> {
 const Table = <TData = unknown,>(props: TableProps<TData>) => {
   const {
     loading,
-    sortIcons = { asc: " 🔼", desc: " 🔽" },
+    sortIcons = { asc: "🔼", desc: "🔽" },
     enableDragging,
     ...tableProps
   } = props;
@@ -54,14 +55,6 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
         e.currentTarget.clientWidth.toString() + "px"
       );
     }
-  };
-
-  const handleDragLeave: DragEventHandler<HTMLTableCellElement> = (e) => {
-    if (!enableDragging) return;
-
-    if (e.currentTarget === dragFromRef.current) return;
-
-    e.currentTarget.style.setProperty("border", null);
   };
 
   const handleDragEnd: DragEventHandler<HTMLTableCellElement> = () => {
@@ -112,44 +105,21 @@ const Table = <TData = unknown,>(props: TableProps<TData>) => {
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header, headerIndex) => {
+              {headerGroup.headers.map((header) => {
                 const sort = header.column.getIsSorted();
                 const sortIcon = sort ? sortIcons[sort] : null;
-                let cursor = "";
-
-                if (_loading) {
-                  cursor = "cursor-not-allowed";
-                } else if (header.column.getCanSort()) {
-                  cursor = "cursor-pointer";
-                }
 
                 return (
-                  <th
+                  <HeaderCell
                     key={header.id}
-                    data-id={header.id}
-                    data-index={headerIndex}
-                    className="text-left bg-slate-100"
-                    style={{ width: header.getSize() }}
-                    draggable={enableDragging}
-                    onDragStart={handleDragStart}
+                    {...header}
+                    loading={_loading}
+                    sortIcon={sortIcon}
+                    enableDragging={enableDragging}
                     onDragEnd={handleDragEnd}
                     onDragEnter={handleDragEnter}
-                    onDragLeave={handleDragLeave}
-                  >
-                    <div
-                      className={`p-4 ${cursor}`}
-                      onClick={header.column.getToggleSortingHandler()}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-
-                      {sortIcon}
-                    </div>
-                  </th>
+                    onDragStart={handleDragStart}
+                  />
                 );
               })}
             </tr>
