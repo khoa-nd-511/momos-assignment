@@ -37,9 +37,7 @@ const taskRowSchema = z.object({
       }),
     }),
     createdAt: z.object({
-      date: z.object({
-        start: z.string(),
-      }),
+      created_time: z.string(),
     }),
     description: z.object({
       rich_text: z.array(
@@ -75,6 +73,18 @@ const dateSchema = z.object({
     .catch("")
     .transform((e) => e || ""),
 });
+
+interface TaskRow {
+  name: string;
+  status: string;
+  priority: string;
+  completed: boolean;
+  dueDate: string;
+  tags: { id: string; name: string }[];
+  estimation: number;
+  description: string;
+  createdAt: string;
+}
 
 function getPropertyQuery<TValue = unknown>(property: string, value: TValue) {
   switch (property) {
@@ -147,6 +157,27 @@ function getPropertyQuery<TValue = unknown>(property: string, value: TValue) {
       throw new Error("Invalid tags filter");
     }
 
+    case "createdAt": {
+      const parsed = dateSchema.parse(value);
+
+      if (!parsed) {
+        throw new Error("Invalid date");
+      }
+
+      for (const key in parsed) {
+        // @ts-ignore
+        if (!parsed[key]) {
+          // @ts-ignore
+          delete parsed[key];
+        }
+      }
+
+      return {
+        timestamp: "created_time",
+        created_time: parsed,
+      };
+    }
+
     default:
       throw new Error("Property not supported");
   }
@@ -198,13 +229,23 @@ app.get("/tasks", async (req: Request, res: Response) => {
     }
   }
 
-  const filter: QueryDatabaseParameters["filter"] = {
+  const timestamp = {};
+
+  let filter: QueryDatabaseParameters["filter"] = {
     and: [],
   };
 
   for (const [key, value] of Object.entries(rawFilter)) {
     try {
       const f = getPropertyQuery(key, value);
+
+      if (f.timestamp || f.created_time) {
+        // handle filter with timestamp
+        // @ts-ignore
+        filter.and.push(f);
+        continue;
+      }
+
       filter.and.push(f);
     } catch (error) {
       console.log("error while parsing filter query", error);
@@ -218,10 +259,11 @@ app.get("/tasks", async (req: Request, res: Response) => {
     filter,
   });
 
-  const list = query.results.map((row) => {
+  const list: TaskRow[] = [];
+  for (const row of query.results) {
     const parsed = taskRowSchema.safeParse(row);
 
-    if (!parsed.data) return null;
+    if (!parsed.data) continue;
 
     const {
       properties: {
@@ -237,7 +279,7 @@ app.get("/tasks", async (req: Request, res: Response) => {
       },
     } = parsed.data;
 
-    return {
+    list.push({
       name: name.title[0].plain_text,
       status: status.select.name,
       priority: priority.status.name,
@@ -249,9 +291,9 @@ app.get("/tasks", async (req: Request, res: Response) => {
       })),
       estimation: estimation.number,
       description: description.rich_text[0].plain_text,
-      createdAt: createdAt.date.start,
-    };
-  });
+      createdAt: createdAt.created_time,
+    });
+  }
   res.json(list);
 });
 

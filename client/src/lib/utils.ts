@@ -62,7 +62,11 @@ export function parseNotionFilter(filters: ColumnFiltersState) {
 
   for (let i = 0; i < filters.length; i++) {
     const filter = filters[i];
-    if (filter.id === "dueDate") {
+    if (
+      filter.id === "dueDate" ||
+      filter.id === "createdAt" ||
+      filter.id === "lastEditedTime"
+    ) {
       const parsedDate = dateFilterSchema.parse(filter.value);
       parsed.push({
         id: filter.id,

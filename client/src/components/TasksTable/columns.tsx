@@ -1,4 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
+import { formatDistance } from "date-fns";
 
 import { ITask } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
@@ -194,10 +195,18 @@ export const columns = [
   }),
 
   columnHelper.accessor("createdAt", {
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Created At" />;
+    header: ({ table, column }) => {
+      return (
+        <DataTableColumnHeader
+          column={column}
+          title="Created At"
+          renderFilter={() => (
+            <DateFilter table={table} column={column} fieldName="createdAt" />
+          )}
+        />
+      );
     },
-    cell: ({ getValue }) => formatDate(getValue()),
+    cell: ({ getValue }) => formatDistance(getValue(), Date.now()),
     size: 200,
   }),
 ];
