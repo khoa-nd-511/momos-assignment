@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { DateRange } from "react-day-picker";
 
 import {
   Select,
@@ -19,9 +17,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { NotionFilterProps } from "@/lib/types";
 import { Calendar } from "@/components/ui/calendar";
-import { DateRange } from "react-day-picker";
+import { Button } from "@/components/ui/button";
+import { NotionFilterProps } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 type DateFilterProps<TData> = NotionFilterProps<TData, string>;
 
