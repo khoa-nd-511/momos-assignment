@@ -31,7 +31,7 @@ const NumberFilter = <TData,>({
         variant="ghost"
         onClick={() => {
           column.setFilterValue("");
-          setValue(undefined);
+          setValue("");
         }}
         disabled={!value}
       >
