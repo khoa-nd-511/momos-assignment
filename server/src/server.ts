@@ -81,6 +81,13 @@ function getPropertyQuery(property: string, value: string) {
           equals: value === "true",
         },
       };
+    case "estimation":
+      return {
+        property,
+        number: {
+          equals: Number(value),
+        },
+      };
 
     default:
       throw new Error("Property not supported");

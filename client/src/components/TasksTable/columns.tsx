@@ -8,6 +8,7 @@ import { DataTableColumnHeader } from "@/components/ui/data-table-column-header"
 import CheckboxFilter from "@/components/ui/data-table-checkbox-filter";
 import RichTextFilter from "@/components/ui/data-table-rich-text-filter";
 import SelectFilter from "@/components/ui/data-table-select-filter";
+import NumberFilter from "@/components/ui/data-table-number-filter";
 
 const columnHelper = createColumnHelper<ITask>();
 
@@ -93,8 +94,20 @@ export const columns = [
   }),
 
   columnHelper.accessor("estimation", {
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Estimation" />;
+    header: ({ table, column }) => {
+      return (
+        <DataTableColumnHeader
+          column={column}
+          title="Estimation"
+          renderFilter={() => (
+            <NumberFilter
+              fieldName="estimation"
+              column={column}
+              table={table}
+            />
+          )}
+        />
+      );
     },
   }),
 
