@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/popover";
 import { NotionFilterProps } from "@/lib/types";
 import { Calendar } from "@/components/ui/calendar";
+import { DateRange } from "react-day-picker";
 
 type DateFilterProps<TData> = NotionFilterProps<TData, string>;
 
@@ -35,10 +36,26 @@ const DateFilter = <TData,>({
   table,
   column,
 }: DateFilterProps<TData>) => {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+    const initialValue = table
+      .getColumn(fieldName)
+      ?.getFilterValue() as DateValue;
+
+    if (initialValue && initialValue.before && initialValue.after) {
+      return {
+        from: initialValue.after,
+        to: initialValue.before,
+      };
+    }
+
+    return undefined;
+  });
   const [date, setDate] = useState<Date | undefined>(() => {
     const initialValue = table
       .getColumn(fieldName)
       ?.getFilterValue() as DateValue;
+
+    if (!initialValue) return undefined;
 
     if (initialValue.equals) {
       return initialValue.equals;
@@ -51,10 +68,13 @@ const DateFilter = <TData,>({
 
     return undefined;
   });
+
   const [option, setOption] = useState(() => {
     const initialValue = table
       .getColumn(fieldName)
       ?.getFilterValue() as DateValue;
+
+    if (!initialValue) return "equals";
 
     if (initialValue.equals) {
       return "equals";
@@ -73,7 +93,11 @@ const DateFilter = <TData,>({
   };
 
   const handleFilter = () => {
-    if (option === "isBetween") {
+    if (option === "between") {
+      column.setFilterValue({
+        after: dateRange?.from,
+        before: dateRange?.to,
+      });
       return;
     }
 
@@ -109,11 +133,33 @@ const DateFilter = <TData,>({
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, "PPP") : <span>Pick a date</span>}
+            {option === "between" ? null : date ? (
+              format(date, "PPP")
+            ) : (
+              <span>Pick a date</span>
+            )}
+            {option === "between" ? (
+              dateRange?.from && dateRange.to ? (
+                `${format(dateRange.from, "yyy/M/d")} - ${format(
+                  dateRange.to,
+                  "yyy/M/d"
+                )}`
+              ) : (
+                <span>Pick a date</span>
+              )
+            ) : null}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
-          <Calendar mode="single" selected={date} onSelect={setDate} />
+          {option === "between" ? (
+            <Calendar
+              mode="range"
+              selected={dateRange}
+              onSelect={setDateRange}
+            />
+          ) : (
+            <Calendar mode="single" selected={date} onSelect={setDate} />
+          )}
         </PopoverContent>
       </Popover>
 
