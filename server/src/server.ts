@@ -11,7 +11,7 @@ const taskRowSchema = z.object({
       checkbox: z.boolean(),
     }),
     priority: z.object({
-      select: z.object({
+      status: z.object({
         name: z.string(),
       }),
     }),
@@ -89,6 +89,13 @@ function getPropertyQuery<TValue = unknown>(property: string, value: TValue) {
       return {
         property,
         select: {
+          equals: String(value),
+        },
+      };
+    case "priority":
+      return {
+        property,
+        status: {
           equals: String(value),
         },
       };
@@ -220,7 +227,7 @@ app.get("/tasks", async (req: Request, res: Response) => {
     return {
       name: name.title[0].plain_text,
       status: status.select.name,
-      priority: priority.select.name,
+      priority: priority.status.name,
       dueDate: dueDate.date.start,
       completed: completed.checkbox,
       tags: tags.multi_select.map((tag) => ({

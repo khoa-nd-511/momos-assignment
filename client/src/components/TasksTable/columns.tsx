@@ -36,7 +36,25 @@ export const columns = [
           column={column}
           title="Status"
           renderFilter={() => (
-            <SelectFilter fieldName="status" column={column} table={table} />
+            <SelectFilter
+              fieldName="status"
+              column={column}
+              table={table}
+              options={[
+                {
+                  label: "Ready",
+                  value: "ready",
+                },
+                {
+                  label: "Doing",
+                  value: "doing",
+                },
+                {
+                  label: "Done",
+                  value: "done",
+                },
+              ]}
+            />
           )}
         />
       );
@@ -45,8 +63,34 @@ export const columns = [
   }),
 
   columnHelper.accessor("priority", {
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Priority" />;
+    header: ({ table, column }) => {
+      return (
+        <DataTableColumnHeader
+          column={column}
+          title="Priority"
+          renderFilter={() => (
+            <SelectFilter
+              fieldName="priority"
+              column={column}
+              table={table}
+              options={[
+                {
+                  label: "High",
+                  value: "high",
+                },
+                {
+                  label: "Medium",
+                  value: "medium",
+                },
+                {
+                  label: "Low",
+                  value: "low",
+                },
+              ]}
+            />
+          )}
+        />
+      );
     },
     size: 180,
   }),

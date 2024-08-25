@@ -9,11 +9,16 @@ import {
 import { NotionFilterProps } from "@/lib/types";
 import { useState } from "react";
 
+type SelectFilterProps<TData> = NotionFilterProps<TData, string> & {
+  options: { label: string; value: string }[];
+};
+
 const SelectFilter = <TData,>({
   fieldName,
   table,
   column,
-}: NotionFilterProps<TData, string>) => {
+  options,
+}: SelectFilterProps<TData>) => {
   const [value, setValue] = useState(
     (table.getColumn(fieldName)?.getFilterValue() || "") as string
   );
@@ -31,9 +36,9 @@ const SelectFilter = <TData,>({
           <SelectValue placeholder="Select a status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="ready">Ready</SelectItem>
-          <SelectItem value="doing">Doing</SelectItem>
-          <SelectItem value="done">Done</SelectItem>
+          {options.map(({ label, value }) => (
+            <SelectItem value={value}>{label}</SelectItem>
+          ))}
         </SelectContent>
       </Select>
       <Button
