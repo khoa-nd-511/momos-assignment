@@ -37,6 +37,7 @@ const SelectFilter = <TData,>({
         </SelectContent>
       </Select>
       <Button
+        variant="ghost"
         onClick={() => {
           column.setFilterValue("");
           setValue("");

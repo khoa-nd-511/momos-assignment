@@ -1,6 +1,7 @@
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { z } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -8,10 +9,10 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatDate(s: string) {
   const date = new Date(s);
-  return `${date.getFullYear()}-${date
-    .getMonth()
-    .toString()
-    .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 export function constructQueryString(
@@ -41,4 +42,36 @@ export function constructQueryString(
   }
 
   return `?${params.toString()}`;
+}
+
+function dateString(date?: Date) {
+  if (!date) return "";
+  const dateString = date.toISOString();
+  const formattedDate = formatDate(dateString);
+  return formattedDate;
+}
+
+const dateFilterSchema = z.object({
+  equals: z.date().optional().catch(undefined).transform(dateString),
+  before: z.date().optional().catch(undefined).transform(dateString),
+  after: z.date().optional().catch(undefined).transform(dateString),
+});
+
+export function parseNotionFilter(filters: ColumnFiltersState) {
+  const parsed: ColumnFiltersState = [];
+
+  for (let i = 0; i < filters.length; i++) {
+    const filter = filters[i];
+    if (filter.id === "dueDate") {
+      const parsedDate = dateFilterSchema.parse(filter.value);
+      parsed.push({
+        id: filter.id,
+        value: parsedDate,
+      });
+    } else {
+      parsed.push(filter);
+    }
+  }
+
+  return parsed;
 }

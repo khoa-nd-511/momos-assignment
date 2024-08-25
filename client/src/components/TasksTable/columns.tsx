@@ -9,6 +9,7 @@ import CheckboxFilter from "@/components/ui/data-table-checkbox-filter";
 import RichTextFilter from "@/components/ui/data-table-rich-text-filter";
 import SelectFilter from "@/components/ui/data-table-select-filter";
 import NumberFilter from "@/components/ui/data-table-number-filter";
+import DateFilter from "@/components/ui/data-table-date-filter";
 
 const columnHelper = createColumnHelper<ITask>();
 
@@ -80,8 +81,16 @@ export const columns = [
   }),
 
   columnHelper.accessor("dueDate", {
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Due Date" />;
+    header: ({ table, column }) => {
+      return (
+        <DataTableColumnHeader
+          column={column}
+          title="Due Date"
+          renderFilter={() => (
+            <DateFilter table={table} column={column} fieldName="dueDate" />
+          )}
+        />
+      );
     },
     cell: ({ getValue }) => formatDate(getValue()),
     size: 200,

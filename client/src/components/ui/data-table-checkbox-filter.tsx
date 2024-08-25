@@ -33,6 +33,7 @@ const CheckboxFilter = <TData,>({
         </div>
       </RadioGroup>
       <Button
+        variant="ghost"
         onClick={() => {
           column.setFilterValue("");
           setValue("");

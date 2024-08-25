@@ -27,6 +27,7 @@ const RichTextFilter = <TData,>({
       />
 
       <Button
+        variant="ghost"
         onClick={() => {
           column.setFilterValue("");
           setValue("");

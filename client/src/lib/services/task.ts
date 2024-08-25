@@ -1,7 +1,7 @@
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 
 import { ITask } from "../types";
-import { constructQueryString } from "../utils";
+import { constructQueryString, parseNotionFilter } from "../utils";
 
 export async function getTasks({
   sorts = [],
@@ -14,7 +14,9 @@ export async function getTasks({
   for (const sort of sorts) {
     sortObj[sort.id] = sort.desc ? "descending" : "ascending";
   }
-  const queryString = constructQueryString(sorts, filters);
+
+  const parsedFilters = parseNotionFilter(filters);
+  const queryString = constructQueryString(sorts, parsedFilters);
 
   const res = await fetch(`http://localhost:3000/tasks${queryString}`);
   return res.json();

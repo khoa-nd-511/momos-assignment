@@ -58,27 +58,45 @@ const taskRowSchema = z.object({
   }),
 });
 
-function getPropertyQuery(property: string, value: string) {
+const dateSchema = z.object({
+  equals: z
+    .string()
+    .optional()
+    .catch("")
+    .transform((e) => e || ""),
+  before: z
+    .string()
+    .optional()
+    .catch("")
+    .transform((e) => e || ""),
+  after: z
+    .string()
+    .optional()
+    .catch("")
+    .transform((e) => e || ""),
+});
+
+function getPropertyQuery<TValue = unknown>(property: string, value: TValue) {
   switch (property) {
     case "name":
       return {
         property,
         rich_text: {
-          contains: value,
+          contains: String(value),
         },
       };
     case "status":
       return {
         property,
         select: {
-          equals: value,
+          equals: String(value),
         },
       };
     case "completed":
       return {
         property,
         checkbox: {
-          equals: value === "true",
+          equals: String(value) === "true",
         },
       };
     case "estimation":
@@ -88,6 +106,26 @@ function getPropertyQuery(property: string, value: string) {
           equals: Number(value),
         },
       };
+    case "dueDate": {
+      const parsed = dateSchema.parse(value);
+
+      if (!parsed) {
+        throw new Error("Invalid date");
+      }
+
+      for (const key in parsed) {
+        // @ts-ignore
+        if (!parsed[key]) {
+          // @ts-ignore
+          delete parsed[key];
+        }
+      }
+
+      return {
+        property,
+        date: parsed,
+      };
+    }
 
     default:
       throw new Error("Property not supported");
@@ -144,12 +182,15 @@ app.get("/tasks", async (req: Request, res: Response) => {
     and: [],
   };
 
-  Object.entries(rawFilter).forEach(([key, value]) => {
-    if (typeof value === "string") {
-      filter.and.push(getPropertyQuery(key, value));
+  for (const [key, value] of Object.entries(rawFilter)) {
+    try {
+      const f = getPropertyQuery(key, value);
+      filter.and.push(f);
+    } catch (error) {
+      console.log("error while parsing filter query", error);
+      continue;
     }
-  });
-  console.log("filter", filter.and);
+  }
 
   const query = await notion.databases.query({
     database_id: notionDatabaseId,

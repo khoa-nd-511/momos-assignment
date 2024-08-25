@@ -28,6 +28,7 @@ const NumberFilter = <TData,>({
       />
 
       <Button
+        variant="ghost"
         onClick={() => {
           column.setFilterValue("");
           setValue(undefined);
