@@ -12,21 +12,11 @@ import { DataTable } from "@/components/ui/data-table";
 import { columns } from "@/components/TasksTable/columns";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 
-const initialColumnsOrder = [
-  "name",
-  "status",
-  "priority",
-  "completed",
-  "dueDate",
-  "tags",
-  "estimation",
-  "description",
-  "createdAt",
-];
-
 const TasksTable = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnOrder, setColumnOrder] = useState<string[]>(initialColumnsOrder);
+  const [columnOrder, setColumnOrder] = useState<string[]>(() => {
+    return columns.map((c) => c.accessorKey);
+  });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const { data = [], loading, error, load } = useLoader(getTasks);
@@ -56,11 +46,11 @@ const TasksTable = () => {
           getCoreRowModel={getCoreRowModel()}
           data={data}
           columns={columns}
-          // defaultColumn={{
-          //   size: 200,
-          //   minSize: 50,
-          //   maxSize: 500,
-          // }}
+          defaultColumn={{
+            size: 150,
+            minSize: 50,
+            maxSize: 500,
+          }}
           state={{
             sorting,
             columnOrder,

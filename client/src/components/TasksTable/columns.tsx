@@ -25,6 +25,7 @@ export const columns = [
         />
       );
     },
+    size: 180,
   }),
 
   columnHelper.accessor("status", {
@@ -39,12 +40,14 @@ export const columns = [
         />
       );
     },
+    size: 180,
   }),
 
   columnHelper.accessor("priority", {
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Priority" />;
     },
+    size: 180,
   }),
 
   columnHelper.accessor("completed", {
@@ -73,6 +76,7 @@ export const columns = [
         />
       );
     },
+    size: 180,
   }),
 
   columnHelper.accessor("dueDate", {
@@ -80,6 +84,7 @@ export const columns = [
       return <DataTableColumnHeader column={column} title="Due Date" />;
     },
     cell: ({ getValue }) => formatDate(getValue()),
+    size: 200,
   }),
 
   columnHelper.accessor("tags", {
@@ -91,6 +96,7 @@ export const columns = [
         ))}
       </div>
     ),
+    size: 250,
   }),
 
   columnHelper.accessor("estimation", {
@@ -109,10 +115,12 @@ export const columns = [
         />
       );
     },
+    size: 180,
   }),
 
   columnHelper.accessor("description", {
     header: "Description",
+    size: 180,
   }),
 
   columnHelper.accessor("createdAt", {
@@ -120,5 +128,6 @@ export const columns = [
       return <DataTableColumnHeader column={column} title="Created At" />;
     },
     cell: ({ getValue }) => formatDate(getValue()),
+    size: 200,
   }),
 ];
