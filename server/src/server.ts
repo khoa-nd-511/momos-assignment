@@ -133,6 +133,19 @@ function getPropertyQuery<TValue = unknown>(property: string, value: TValue) {
         date: parsed,
       };
     }
+    case "tags": {
+      if (Array.isArray(value)) {
+        return {
+          or: value.map((tag) => ({
+            property,
+            multi_select: {
+              contains: tag,
+            },
+          })),
+        };
+      }
+      throw new Error("Invalid tags filter");
+    }
 
     default:
       throw new Error("Property not supported");

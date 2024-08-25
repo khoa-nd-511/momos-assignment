@@ -19,6 +19,7 @@ interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>;
   title: string;
+  enableSort?: boolean;
   renderFilter?: () => ReactNode;
 }
 
@@ -26,6 +27,7 @@ export function DataTableColumnHeader<TData, TValue>({
   column,
   title,
   className,
+  enableSort = true,
   renderFilter,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
@@ -37,21 +39,23 @@ export function DataTableColumnHeader<TData, TValue>({
       <span>{title}</span>
 
       <div>
-        <Button
-          variant="ghost"
-          className="p-2"
-          onClick={() => {
-            column.toggleSorting(undefined, column.getCanMultiSort());
-          }}
-        >
-          {column.getIsSorted() === "desc" ? (
-            <ArrowDownIcon className="h-4 w-4" />
-          ) : column.getIsSorted() === "asc" ? (
-            <ArrowUpIcon className="h-4 w-4" />
-          ) : (
-            <CaretSortIcon className="h-4 w-4" />
-          )}
-        </Button>
+        {enableSort && (
+          <Button
+            variant="ghost"
+            className="p-2"
+            onClick={() => {
+              column.toggleSorting(undefined, column.getCanMultiSort());
+            }}
+          >
+            {column.getIsSorted() === "desc" ? (
+              <ArrowDownIcon className="h-4 w-4" />
+            ) : column.getIsSorted() === "asc" ? (
+              <ArrowUpIcon className="h-4 w-4" />
+            ) : (
+              <CaretSortIcon className="h-4 w-4" />
+            )}
+          </Button>
+        )}
 
         {!!renderFilter && (
           <DropdownMenu>

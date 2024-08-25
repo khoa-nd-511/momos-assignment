@@ -10,6 +10,7 @@ import RichTextFilter from "@/components/ui/data-table-rich-text-filter";
 import SelectFilter from "@/components/ui/data-table-select-filter";
 import NumberFilter from "@/components/ui/data-table-number-filter";
 import DateFilter from "@/components/ui/data-table-date-filter";
+import MultiSelectFilter from "@/components/ui/data-table-multi-select-filter";
 
 const columnHelper = createColumnHelper<ITask>();
 
@@ -141,7 +142,23 @@ export const columns = [
   }),
 
   columnHelper.accessor("tags", {
-    header: "Tags",
+    header: ({ table, column }) => {
+      return (
+        <DataTableColumnHeader
+          column={column}
+          title="Tags"
+          enableSort={false}
+          renderFilter={() => (
+            <MultiSelectFilter
+              table={table}
+              column={column}
+              fieldName="tags"
+              placeholder="Enter tag to filter..."
+            />
+          )}
+        />
+      );
+    },
     cell: (props) => (
       <div className="flex flex-wrap gap-2">
         {props.getValue().map(({ id, name }) => (
