@@ -1,18 +1,28 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ITag, NotionFilterProps } from "@/lib/types";
+import { NotionFilterProps } from "@/lib/types";
 import { KeyboardEventHandler, useState } from "react";
 
-type MultiSelectFilterProps<TData> = NotionFilterProps<TData, ITag[]> & {
+type MultiSelectFilterProps<TData, TValue> = NotionFilterProps<
+  TData,
+  TValue[]
+> & {
   placeholder?: string;
 };
 
-const MultiSelectFilter = <TData,>({
+const MultiSelectFilter = <TData, TValue>({
+  table,
   column,
   placeholder,
-}: MultiSelectFilterProps<TData>) => {
-  const [tags, setTags] = useState<string[]>([]);
+  fieldName,
+}: MultiSelectFilterProps<TData, TValue>) => {
+  const [tags, setTags] = useState<string[]>(() => {
+    const initialValue =
+      (table.getColumn(fieldName)?.getFilterValue() as string[]) || [];
+
+    return initialValue || [];
+  });
 
   const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key === "Enter") {
