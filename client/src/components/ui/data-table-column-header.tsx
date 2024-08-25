@@ -33,42 +33,44 @@ export function DataTableColumnHeader<TData, TValue>({
   }
 
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div className={cn("flex items-center justify-between gap-2", className)}>
       <span>{title}</span>
 
-      <Button
-        variant="ghost"
-        className="p-2"
-        onClick={() => {
-          column.toggleSorting(undefined, column.getCanMultiSort());
-        }}
-      >
-        {column.getIsSorted() === "desc" ? (
-          <ArrowDownIcon className="h-4 w-4" />
-        ) : column.getIsSorted() === "asc" ? (
-          <ArrowUpIcon className="h-4 w-4" />
-        ) : (
-          <CaretSortIcon className="h-4 w-4" />
-        )}
-      </Button>
+      <div>
+        <Button
+          variant="ghost"
+          className="p-2"
+          onClick={() => {
+            column.toggleSorting(undefined, column.getCanMultiSort());
+          }}
+        >
+          {column.getIsSorted() === "desc" ? (
+            <ArrowDownIcon className="h-4 w-4" />
+          ) : column.getIsSorted() === "asc" ? (
+            <ArrowUpIcon className="h-4 w-4" />
+          ) : (
+            <CaretSortIcon className="h-4 w-4" />
+          )}
+        </Button>
 
-      {!!renderFilter && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="p-2">
-              <FilterIcon
-                size={16}
-                className={cn("stroke-slate-600", {
-                  "fill-slate-600": !!column.getFilterValue(),
-                })}
-              />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="px-8 py-4">
-            {renderFilter()}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
+        {!!renderFilter && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="p-2">
+                <FilterIcon
+                  size={16}
+                  className={cn("stroke-slate-600", {
+                    "fill-slate-600": !!column.getFilterValue(),
+                  })}
+                />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="px-8 py-4">
+              {renderFilter()}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
     </div>
   );
 }
