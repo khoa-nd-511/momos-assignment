@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -12,38 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import CompoundFilterList from "@/components/ui/compound-filter-list";
-
-const operationSchema = z.enum([
-  "contains",
-  "less_than",
-  "greater_than",
-  "equals",
-]);
-
-const propertyTypeSchema = z.enum([
-  "rich_text",
-  "number",
-  "boolean",
-  "multi_select",
-]);
-
-const filterSchema = z.object({
-  property: z.string(),
-  propertyType: propertyTypeSchema,
-  operation: operationSchema,
-  value: z.union([z.string(), z.number(), z.boolean()]),
-});
-
-const groupFiltersSchema = z.object({
-  operator: z.enum(["and", "or"]),
-  filters: z.array(filterSchema),
-});
-
-const formSchema = z.object({
-  filters: z.array(z.union([filterSchema, groupFiltersSchema])),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import { parseCompoundFilter } from "@/lib/utils";
+import { formSchema } from "@/lib/validation";
+import { CompoundFilterFormValues } from "@/lib/types";
 
 const Debug = () => {
   const values = useWatch();
@@ -51,18 +21,16 @@ const Debug = () => {
 };
 
 const CompoundFilter = ({ debug }: { debug?: boolean }) => {
-  const form = useForm<FormValues>({
+  const form = useForm<CompoundFilterFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       filters: [],
     },
   });
 
-  function onSubmit(values: FormValues) {
-    console.log("success", {
-      and: values.filters,
-    });
-  }
+  const onSubmit = (values: CompoundFilterFormValues) => {
+    parseCompoundFilter(values.filters);
+  };
 
   return (
     <Form {...form}>

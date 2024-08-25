@@ -1,4 +1,6 @@
+import { formSchema } from "@/lib/validation";
 import { Column, Table } from "@tanstack/react-table";
+import { z } from "zod";
 
 export interface ITag {
   id: string;
@@ -22,3 +24,5 @@ export type NotionFilterProps<TData, TValue> = {
   table: Table<TData>;
   column: Column<TData, TValue>;
 };
+
+export type CompoundFilterFormValues = z.infer<typeof formSchema>;

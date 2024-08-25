@@ -84,7 +84,13 @@ const CompoundFilterListItem = (props: FilterProps) => {
           </FormItem>
         )}
       />
-      <Button variant="ghost" onClick={() => remove(index)}>
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={() => {
+          remove(index);
+        }}
+      >
         <X />
       </Button>
     </div>
