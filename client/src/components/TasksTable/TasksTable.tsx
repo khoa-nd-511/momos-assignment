@@ -98,7 +98,9 @@ const TasksTable = () => {
       enableMultiSort
       enableFilters
       enableColumnFilters
+      enableColumnResizing
       isMultiSortEvent={() => true}
+      columnResizeMode="onChange"
       onSortingChange={handleSortingChange}
       onColumnOrderChange={setColumnOrder}
       onColumnFiltersChange={handleColumnFiltersChange}

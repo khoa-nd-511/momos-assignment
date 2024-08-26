@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData> extends TableOptions<TData> {
   enableDragging?: boolean;
@@ -129,10 +130,13 @@ export function DataTable<TData>({
                       data-id={header.id}
                       data-index={header.index}
                       style={{ width: header.column.getSize() }}
-                      draggable={enableDragging}
+                      draggable={
+                        enableDragging && !header.column.getIsResizing()
+                      }
                       onDragEnd={handleDragEnd}
                       onDragEnter={handleDragEnter}
                       onDragStart={handleDragStart}
+                      className="relative group/item"
                     >
                       {header.isPlaceholder
                         ? null
@@ -140,6 +144,20 @@ export function DataTable<TData>({
                             header.column.columnDef.header,
                             header.getContext()
                           )}
+
+                      {header.column.getCanResize() && (
+                        <div
+                          data-label="resizer"
+                          className={cn(
+                            "absolute h-full w-[4px] top-0 right-0 cursor-col-resize select-none touch-none bg-blue-400 rounded-sm opacity-0 group-hover/item:opacity-100",
+                            {
+                              "bg-green-400": header.column.getIsResizing(),
+                              "opacity-100": header.column.getIsResizing(),
+                            }
+                          )}
+                          onMouseDown={header.getResizeHandler()}
+                        />
+                      )}
                     </TableHead>
                   );
                 })}
