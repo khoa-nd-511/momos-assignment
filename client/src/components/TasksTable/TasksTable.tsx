@@ -31,48 +31,42 @@ const TasksTable = () => {
   }, [sorting, columnFilters, load]);
 
   return (
-    <>
-      <div className="flex items-center justify-between w-full">
-        {loading ? <div>Loading Tasks...</div> : <div>{data.length} items</div>}
-      </div>
-
-      <div className="overflow-x-auto mt-5">
-        <DataTable
-          // custom props
-          enableDragging
-          loading={loading}
-          error={error}
-          // table props
-          getCoreRowModel={getCoreRowModel()}
-          data={data}
-          columns={columns}
-          defaultColumn={{
-            size: 150,
-            minSize: 50,
-            maxSize: 500,
-          }}
-          state={{
-            sorting,
-            columnOrder,
-            columnFilters,
-          }}
-          enableSorting
-          enableMultiSort
-          enableFilters
-          enableColumnFilters
-          isMultiSortEvent={() => true}
-          onSortingChange={handleSortingChange}
-          onColumnOrderChange={setColumnOrder}
-          onColumnFiltersChange={setColumnFilters}
-          meta={{
-            sortIcons: {
-              asc: <ArrowUpIcon />,
-              desc: <ArrowDownIcon />,
-            },
-          }}
-        />
-      </div>
-    </>
+    <div className="overflow-x-auto mt-5">
+      <DataTable
+        // custom props
+        enableDragging
+        loading={loading}
+        error={error}
+        // table props
+        getCoreRowModel={getCoreRowModel()}
+        data={data}
+        columns={columns}
+        defaultColumn={{
+          size: 150,
+          minSize: 50,
+          maxSize: 500,
+        }}
+        state={{
+          sorting,
+          columnOrder,
+          columnFilters,
+        }}
+        enableSorting
+        enableMultiSort
+        enableFilters
+        enableColumnFilters
+        isMultiSortEvent={() => true}
+        onSortingChange={handleSortingChange}
+        onColumnOrderChange={setColumnOrder}
+        onColumnFiltersChange={setColumnFilters}
+        meta={{
+          sortIcons: {
+            asc: <ArrowUpIcon />,
+            desc: <ArrowDownIcon />,
+          },
+        }}
+      />
+    </div>
   );
 };
 

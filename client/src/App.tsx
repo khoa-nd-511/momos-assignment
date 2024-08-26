@@ -1,5 +1,4 @@
-import CompoundFilter from "@/components/CompoundFilter";
-// import TasksTable from "./components/TasksTable";
+import TasksTable from "./components/TasksTable";
 
 function App() {
   return (
@@ -7,12 +6,8 @@ function App() {
       <h1 className="text-3xl font-bold text-center">Notion Integration</h1>
 
       <div className="mt-10 mx-auto w-full max-w-screen-xl">
-        <CompoundFilter />
-      </div>
-
-      {/* <div className="mt-10 mx-auto w-full max-w-screen-xl">
         <TasksTable />
-      </div> */}
+      </div>
     </main>
   );
 }
