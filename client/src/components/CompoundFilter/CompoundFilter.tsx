@@ -79,7 +79,7 @@ const CompoundFilter = ({
 register({
   name: "name",
   propertyType: "rich_text",
-  field: ({ field }) => <Input {...field} />,
+  field: ({ field }) => <Input {...field} placeholder="Enter task name..." />,
   options: [
     {
       label: "Equals",
@@ -99,6 +99,7 @@ register({
       type="number"
       {...field}
       onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
+      placeholder="Enter an estimation..."
     />
   ),
   options: [

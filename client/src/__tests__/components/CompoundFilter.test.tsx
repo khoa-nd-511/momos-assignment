@@ -1,4 +1,9 @@
-import { render, screen } from "@/test-utils";
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@/test-utils";
 
 import CompoundFilter from "@/components/CompoundFilter";
 
@@ -81,5 +86,83 @@ describe("CompoundFilter", () => {
     expect(screen.getByDisplayValue("Completed")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Equals")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Not Completed")).toBeInTheDocument();
+  });
+
+  test("should handle adding, editing submitting rule", async () => {
+    const handleFilterChange = jest.fn();
+    const { user } = render(<CompoundFilter onChange={handleFilterChange} />);
+
+    expect(screen.getByRole("button", { name: /submit/i })).toBeDisabled();
+
+    await user.click(screen.getByRole("button", { name: /add rule/i }));
+
+    await user.click(screen.getByText(/add filter rule/i));
+
+    expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
+
+    expect(screen.getByDisplayValue("Name")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Equals")).toBeInTheDocument();
+
+    await user.type(
+      screen.getByPlaceholderText(/enter task name.../i),
+      "design"
+    );
+
+    expect(screen.getByDisplayValue("design")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /submit/i }));
+
+    expect(handleFilterChange).toHaveBeenCalledTimes(1);
+    expect(handleFilterChange).toHaveBeenCalledWith({
+      and: [{ property: "name", rich_text: { equals: "design" } }],
+    });
+  });
+
+  test("should handle remove rule", async () => {
+    const { user } = render(
+      <CompoundFilter
+        compoundFilter={{
+          and: [{ property: "name", rich_text: { contains: "ui" } }],
+        }}
+      />
+    );
+
+    expect(screen.getByText(/submit/i)).toBeEnabled();
+
+    expect(screen.getByDisplayValue("Name")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Contains")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("ui")).toBeInTheDocument();
+
+    await user.click(screen.getByLabelText("remove filters.0"));
+
+    expect(screen.getByText(/submit/i)).toBeDisabled();
+  });
+
+  test("should handle remove filter group", async () => {
+    const { user } = render(
+      <CompoundFilter
+        compoundFilter={{
+          and: [
+            {
+              or: [
+                { property: "name", rich_text: { contains: "ui" } },
+                { property: "name", rich_text: { contains: "design" } },
+              ],
+            },
+          ],
+        }}
+      />
+    );
+
+    expect(screen.getByText(/submit/i)).toBeEnabled();
+
+    expect(screen.getAllByDisplayValue("Name")).toHaveLength(2);
+    expect(screen.getAllByDisplayValue("Contains")).toHaveLength(2);
+    expect(screen.getByDisplayValue("design")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("ui")).toBeInTheDocument();
+
+    await user.click(screen.getByText(/remove group/i));
+
+    expect(screen.getByText(/submit/i)).toBeDisabled();
   });
 });

@@ -117,6 +117,7 @@ const CompoundFilterListItem = (props: FilterProps) => {
         }}
       />
       <Button
+        aria-label={`remove ${name}.${index}`}
         type="button"
         variant="ghost"
         onClick={() => {
