@@ -37,6 +37,8 @@ git clone https://github.com/khoa-nd-511/momos-assignment.git
 cd momos-assignment
 ```
 
+Create .env file with values provided from email
+
 Run the project
 
 ```
