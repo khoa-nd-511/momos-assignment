@@ -1,4 +1,4 @@
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 // import { zodResolver } from "@hookform/resolvers/zod";
 import { noop } from "@tanstack/react-table";
 
@@ -28,17 +28,10 @@ import {
 // import { formSchema } from "@/lib/validation";
 import { CompoundFilterFormValues } from "@/lib/types";
 
-const Debug = () => {
-  const values = useWatch();
-  return <pre>{JSON.stringify(values, null, 2)}</pre>;
-};
-
 const CompoundFilter = ({
-  debug,
   compoundFilter,
   onChange = noop,
 }: {
-  debug?: boolean;
   onChange?: (values: unknown) => void;
   compoundFilter?: unknown;
 }) => {
@@ -78,7 +71,6 @@ const CompoundFilter = ({
             </Button>
           </CardFooter>
         </Card>
-        {debug && <Debug />}
       </form>
     </Form>
   );
