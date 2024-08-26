@@ -69,15 +69,15 @@ const CompoundFilter = ({
   );
 };
 
-register("name", ({ field }) => <Input {...field} />);
-register("estimation", ({ field }) => (
+register("name", "rich_text", ({ field }) => <Input {...field} />);
+register("estimation", "number", ({ field }) => (
   <Input
     type="number"
     {...field}
     onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
   />
 ));
-register("completed", ({ field }) => (
+register("completed", "checkbox", ({ field }) => (
   <Select
     value={String(field.value)}
     onValueChange={(v) => field.onChange(v === "true")}

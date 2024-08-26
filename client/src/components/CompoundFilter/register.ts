@@ -13,7 +13,13 @@ type Props = {
 };
 
 export const ValueFieldMap: Record<string, (props: Props) => ReactNode> = {};
+export const PropertyTypeMap: Record<string, string> = {};
 
-export function register(type: string, field: (props: Props) => ReactNode) {
-  ValueFieldMap[type] = field;
+export function register(
+  name: string,
+  propertyType: string,
+  field: (props: Props) => ReactNode
+) {
+  ValueFieldMap[name] = field;
+  PropertyTypeMap[name] = propertyType;
 }

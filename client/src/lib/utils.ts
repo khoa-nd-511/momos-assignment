@@ -82,11 +82,6 @@ export function parseNotionFilter(filters: ColumnFiltersState) {
   return parsed;
 }
 
-const propertyMap: Record<string, string> = {
-  name: "rich_text",
-  estimation: "number",
-};
-
 export function parseCompoundFilter(
   filters: CompoundFilterFormValues["filters"]
 ): Record<string, unknown>[] {
@@ -96,7 +91,7 @@ export function parseCompoundFilter(
     if ("property" in filter && filter.property && filter.operation) {
       res.push({
         property: filter.property,
-        [propertyMap[filter.property]]: {
+        [filter.propertyType]: {
           [filter.operation]: filter.value,
         },
       });

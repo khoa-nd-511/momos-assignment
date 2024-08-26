@@ -15,7 +15,10 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import { ValueFieldMap } from "@/components/CompoundFilter/register";
+import {
+  PropertyTypeMap,
+  ValueFieldMap,
+} from "@/components/CompoundFilter/register";
 
 type FilterProps = {
   name: string;
@@ -26,7 +29,7 @@ type FilterProps = {
 
 const CompoundFilterListItem = (props: FilterProps) => {
   const { id, index, name, remove } = props;
-  const { control, trigger, getValues } = useFormContext();
+  const { control, trigger, getValues, setValue } = useFormContext();
   return (
     <div key={id} className="flex gap-2">
       {/* Filter Property */}
@@ -39,6 +42,7 @@ const CompoundFilterListItem = (props: FilterProps) => {
               <Select
                 onValueChange={(v) => {
                   field.onChange(v);
+                  setValue(`${name}.${index}.propertyType`, PropertyTypeMap[v]);
                   trigger(`${name}.${index}.value`);
                 }}
                 defaultValue={field.value}
