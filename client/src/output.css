@@ -698,6 +698,11 @@ body {
   margin-bottom: 0.25rem;
 }
 
+.my-5 {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
 .ml-auto {
   margin-left: auto;
 }

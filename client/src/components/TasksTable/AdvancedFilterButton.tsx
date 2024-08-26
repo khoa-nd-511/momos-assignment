@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { noop } from "@tanstack/react-table";
+import { useState } from "react";
 
 interface AdvancedFilterButton extends ButtonProps {
   compoundFilter?: unknown;
@@ -20,10 +21,13 @@ const AdvancedFilterButton = ({
   compoundFilter,
   ...buttonProps
 }: AdvancedFilterButton) => {
+  const [open, setOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button {...buttonProps}>Advanced Filter</Button>
+        <Button {...buttonProps} onClick={() => setOpen(true)}>
+          Advanced Filter
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-screen-xl">
         <DialogHeader>
@@ -34,6 +38,7 @@ const AdvancedFilterButton = ({
           compoundFilter={compoundFilter}
           onChange={(value) => {
             onFilterChange(value);
+            setOpen(false);
           }}
         />
       </DialogContent>

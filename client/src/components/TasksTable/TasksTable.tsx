@@ -42,7 +42,7 @@ const TasksTable = () => {
   }, [sorting, columnFilters, load, compoundFilter]);
 
   return (
-    <div className="overflow-x-auto mt-5">
+    <div className="overflow-auto">
       <DataTable
         // custom props
         enableDragging
@@ -51,7 +51,7 @@ const TasksTable = () => {
         renderInfo={({ getState, resetColumnFilters }) => {
           const { columnFilters } = getState();
           return (
-            <div className="flex items-center justify-between w-full mb-5">
+            <div className="flex items-center justify-between w-full my-5">
               {loading ? (
                 <div>Loading tasks...</div>
               ) : (
