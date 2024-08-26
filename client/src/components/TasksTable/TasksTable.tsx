@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -10,8 +11,8 @@ import { useLoader } from "@/lib/hooks";
 import { getTasks } from "@/lib/services/task";
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "@/components/TasksTable/columns";
-import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AdvancedFilterButton from "@/components/TasksTable/AdvancedFilterButton";
 
 const TasksTable = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -25,6 +26,10 @@ const TasksTable = () => {
   const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
     if (loading) return;
     setSorting(updater);
+  };
+
+  const handleFilterChange = (filter: unknown) => {
+    console.log("filter", filter);
   };
 
   useEffect(() => {
@@ -49,11 +54,14 @@ const TasksTable = () => {
               )}
 
               <div className="flex gap-2">
-                <Button>Advanced Filter</Button>
+                <AdvancedFilterButton
+                  disabled={loading}
+                  onFilterChange={handleFilterChange}
+                />
                 <Button
                   variant="outline"
                   onClick={() => resetColumnFilters()}
-                  disabled={!columnFilters.length}
+                  disabled={!columnFilters.length || loading}
                 >
                   Clear filters
                 </Button>
