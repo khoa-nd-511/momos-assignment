@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import {
+  OperationOptionsMap,
   PropertyTypeMap,
   ValueFieldMap,
 } from "@/components/CompoundFilter/register";
@@ -44,6 +45,7 @@ const CompoundFilterListItem = (props: FilterProps) => {
                   field.onChange(v);
                   setValue(`${name}.${index}.propertyType`, PropertyTypeMap[v]);
                   trigger(`${name}.${index}.value`);
+                  trigger(`${name}.${index}.operation`);
                 }}
                 defaultValue={field.value}
               >
@@ -77,10 +79,13 @@ const CompoundFilterListItem = (props: FilterProps) => {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="equals">Equals</SelectItem>
-                <SelectItem value="contains">Contains</SelectItem>
-                <SelectItem value="less_than">Less Than</SelectItem>
-                <SelectItem value="greater_than">Greater Than</SelectItem>
+                {OperationOptionsMap[
+                  getValues(`${name}.${index}.property`)
+                ].map(({ value, label }) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <FormMessage />

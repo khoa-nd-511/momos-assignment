@@ -69,27 +69,69 @@ const CompoundFilter = ({
   );
 };
 
-register("name", "rich_text", ({ field }) => <Input {...field} />);
-register("estimation", "number", ({ field }) => (
-  <Input
-    type="number"
-    {...field}
-    onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
-  />
-));
-register("completed", "checkbox", ({ field }) => (
-  <Select
-    value={String(field.value)}
-    onValueChange={(v) => field.onChange(v === "true")}
-  >
-    <SelectTrigger className="w-[180px]">
-      <SelectValue placeholder="Select a status" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="true">Completed</SelectItem>
-      <SelectItem value="false">Not Completed</SelectItem>
-    </SelectContent>
-  </Select>
-));
+register({
+  name: "name",
+  propertyType: "rich_text",
+  field: ({ field }) => <Input {...field} />,
+  options: [
+    {
+      label: "Equals",
+      value: "equals",
+    },
+    {
+      label: "Contains",
+      value: "contains",
+    },
+  ],
+});
+register({
+  name: "estimation",
+  propertyType: "number",
+  field: ({ field }) => (
+    <Input
+      type="number"
+      {...field}
+      onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
+    />
+  ),
+  options: [
+    {
+      label: "Equals",
+      value: "equals",
+    },
+    {
+      label: "Less Than",
+      value: "less_than",
+    },
+    {
+      label: "Greater Than",
+      value: "greater_than",
+    },
+  ],
+});
+register({
+  name: "completed",
+  propertyType: "checkbox",
+  field: ({ field }) => (
+    <Select
+      value={String(field.value)}
+      onValueChange={(v) => field.onChange(v === "true")}
+    >
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Select a status" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="true">Completed</SelectItem>
+        <SelectItem value="false">Not Completed</SelectItem>
+      </SelectContent>
+    </Select>
+  ),
+  options: [
+    {
+      label: "Equals",
+      value: "equals",
+    },
+  ],
+});
 
 export default CompoundFilter;
