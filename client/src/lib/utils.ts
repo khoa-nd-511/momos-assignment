@@ -89,14 +89,26 @@ export function parseCompoundFilterFormValues(
   const res = [];
 
   for (const filter of filters) {
-    if ("property" in filter && filter.property && filter.operation) {
+    if (
+      "property" in filter &&
+      "operation" in filter &&
+      "propertyType" in filter &&
+      "value" in filter &&
+      typeof filter.propertyType === "string" &&
+      typeof filter.operation === "string"
+    ) {
       res.push({
         property: filter.property,
         [filter.propertyType]: {
           [filter.operation]: filter.value,
         },
       });
-    } else if ("operator" in filter) {
+    } else if (
+      "filters" in filter &&
+      "operator" in filter &&
+      Array.isArray(filter.filters) &&
+      typeof filter.operator === "string"
+    ) {
       res.push({
         [filter.operator]: parseCompoundFilterFormValues(filter.filters),
       });

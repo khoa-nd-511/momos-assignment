@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useLoader<TLoader extends (...args: any) => Promise<any>>(
   loader: TLoader
 ): {

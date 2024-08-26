@@ -66,3 +66,7 @@ export const compoundFilterSchema: ZodType<
     or: z.array(compoundFilterSchema).optional(),
   })
 );
+
+export const formSchema = z.object({
+  filters: z.array(compoundFilterSchema),
+});
