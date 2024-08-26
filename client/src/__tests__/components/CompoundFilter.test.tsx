@@ -1,9 +1,4 @@
-import {
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from "@/test-utils";
+import { render, screen } from "@/test-utils";
 
 import CompoundFilter from "@/components/CompoundFilter";
 
