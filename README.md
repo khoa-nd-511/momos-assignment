@@ -5,7 +5,7 @@
 - Build table view UI ✅
 - Support sorting ✅
 - Support column rearrangement ✅
-  - This feature is built from scratch using html drag events. There is a issue where the column overlay is being placed wrongly on the table column if we scroll horizontally while dragging.
+  - This feature is built from scratch using html drag events. There is a issue where the column overlay is being placed wrongly on the table column if we scroll horizontally.
 - Support column resize ❌
   - Not implemented yet
 - Support column filters (`checkbox` , `date` , `multi_select` , `number` , `rich_text` , `select` , `timestamp` , `status`) ✅
