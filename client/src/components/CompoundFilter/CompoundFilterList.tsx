@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import CompoundFilterAddRuleButton from "@/components/ui/compound-filter-add-rule-button";
-import CompoundFilterListItem from "@/components/ui/compound-filter-list-item";
+import CompoundFilterAddRuleButton from "@/components/CompoundFilter/CompoundFilterAddRuleButton";
+import CompoundFilterListItem from "@/components/CompoundFilter/CompoundFilterListItem";
 
 type FiltersProps = {
   name: string;

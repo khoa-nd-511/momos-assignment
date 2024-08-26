@@ -1,4 +1,4 @@
-import CompoundFilter from "@/components/ui/compound-filter";
+import CompoundFilter from "@/components/CompoundFilter";
 // import TasksTable from "./components/TasksTable";
 
 function App() {

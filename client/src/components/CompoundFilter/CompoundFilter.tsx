@@ -1,5 +1,6 @@
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { noop } from "@tanstack/react-table";
 
 import {
   Card,
@@ -10,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import CompoundFilterList from "@/components/ui/compound-filter-list";
+import CompoundFilterList from "@/components/CompoundFilter/CompoundFilterList";
 import { parseCompoundFilter } from "@/lib/utils";
 import { formSchema } from "@/lib/validation";
 import { CompoundFilterFormValues } from "@/lib/types";
@@ -20,7 +21,13 @@ const Debug = () => {
   return <pre>{JSON.stringify(values, null, 2)}</pre>;
 };
 
-const CompoundFilter = ({ debug }: { debug?: boolean }) => {
+const CompoundFilter = ({
+  debug,
+  onChange = noop,
+}: {
+  debug?: boolean;
+  onChange?: (values: unknown) => void;
+}) => {
   const form = useForm<CompoundFilterFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -30,7 +37,7 @@ const CompoundFilter = ({ debug }: { debug?: boolean }) => {
 
   const onSubmit = (values: CompoundFilterFormValues) => {
     const res = parseCompoundFilter(values.filters);
-    console.log("res", { and: res });
+    onChange({ and: res });
   };
 
   return (
