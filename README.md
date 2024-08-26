@@ -5,7 +5,7 @@
 - Build table view UI ✅
 - Support sorting ✅
 - Support column rearrangement ✅
-  - This feature is built from scratch using html drag events. There is a issue where the column overlay is being placed wrongly on the table column if we scroll horizontally.
+  - This feature is built from scratch using html drag events. There is a issue where the column overlay is being placed wrongly on the table column if we scroll horizontally. It can be fixed easily by checking the current scroll left of the scroll element and add it to the left value as an offset. However, it requries modifying the ui lib I'm using (shadcn ui table)
 - Support column resize ❌
   - Not implemented yet
 - Support column filters (`checkbox` , `date` , `multi_select` , `number` , `rich_text` , `select` , `timestamp` , `status`) ✅
