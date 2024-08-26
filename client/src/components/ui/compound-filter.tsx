@@ -29,7 +29,8 @@ const CompoundFilter = ({ debug }: { debug?: boolean }) => {
   });
 
   const onSubmit = (values: CompoundFilterFormValues) => {
-    parseCompoundFilter(values.filters);
+    const res = parseCompoundFilter(values.filters);
+    console.log("res", { and: res });
   };
 
   return (

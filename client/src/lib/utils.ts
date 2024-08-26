@@ -3,6 +3,8 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
+import { CompoundFilterFormValues } from "@/lib/types";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -78,4 +80,32 @@ export function parseNotionFilter(filters: ColumnFiltersState) {
   }
 
   return parsed;
+}
+
+const propertyMap: Record<string, string> = {
+  name: "rich_text",
+  estimation: "number",
+};
+
+export function parseCompoundFilter(
+  filters: CompoundFilterFormValues["filters"]
+): Record<string, unknown>[] {
+  const res = [];
+
+  for (const filter of filters) {
+    if ("property" in filter) {
+      res.push({
+        property: filter.property,
+        [propertyMap[filter.property]]: {
+          [filter.operation]: filter.value,
+        },
+      });
+    } else if ("operator" in filter) {
+      res.push({
+        [filter.operator]: parseCompoundFilter(filter.filters),
+      });
+    }
+  }
+
+  return res;
 }
