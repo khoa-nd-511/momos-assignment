@@ -5,10 +5,10 @@ const moduleNameMapper = {
 };
 
 const config: Config = {
-  roots: ["<rootDir>"],
-  preset: "ts-jest",
-  testEnvironment: "jest-environment-jsdom",
+  clearMocks: true,
   moduleNameMapper: moduleNameMapper,
+  testEnvironment: "jest-environment-jsdom",
+  setupFilesAfterEnv: ["<rootDir>/src/test-setup.ts"],
   transform: {
     "^.+\\.tsx?$": "ts-jest",
     ".+\\.(css|less|sass|scss|png|jpg|gif|ttf|woff|woff2|svg)$":
