@@ -1,5 +1,10 @@
-import { useRef, ElementRef, DragEventHandler } from "react";
-import { flexRender, TableOptions, useReactTable } from "@tanstack/react-table";
+import { useRef, ElementRef, DragEventHandler, ReactNode } from "react";
+import {
+  Table as TanstackTable,
+  flexRender,
+  TableOptions,
+  useReactTable,
+} from "@tanstack/react-table";
 import { Loader } from "lucide-react";
 
 import {
@@ -10,25 +15,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 
 interface DataTableProps<TData> extends TableOptions<TData> {
   enableDragging?: boolean;
   loading?: boolean;
   error?: unknown;
+  renderInfo?: (table: TanstackTable<TData>) => ReactNode;
 }
 
 export function DataTable<TData>({
   enableDragging,
   loading,
   error,
+  renderInfo,
   ...tableProps
 }: DataTableProps<TData>) {
   const dragFromRef = useRef<ElementRef<"th"> | null>(null);
   const dragToRef = useRef<ElementRef<"th"> | null>(null);
   const dragToOverlayRef = useRef<ElementRef<"div"> | null>(null);
-
-  const { data } = tableProps;
 
   const table = useReactTable(tableProps);
 
@@ -107,17 +111,9 @@ export function DataTable<TData>({
 
   return (
     <>
-      <div className="flex items-center justify-between w-full">
-        {loading ? <div>Loading...</div> : <div>{data.length} items</div>}
+      {renderInfo && renderInfo(table)}
 
-        {table.getState().columnFilters.length ? (
-          <Button onClick={() => table.resetColumnFilters()}>
-            Clear filters
-          </Button>
-        ) : null}
-      </div>
-
-      <div className="relative rounded-md border mt-10">
+      <div className="relative rounded-md border">
         <div
           ref={dragToOverlayRef}
           className="absolute left-0 top-0 h-full border-dashed border-2 opacity-0 border-slate-500 bg-slate-600/10"

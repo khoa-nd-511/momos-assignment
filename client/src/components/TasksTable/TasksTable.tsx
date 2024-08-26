@@ -11,6 +11,7 @@ import { getTasks } from "@/lib/services/task";
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "@/components/TasksTable/columns";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const TasksTable = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -37,6 +38,29 @@ const TasksTable = () => {
         enableDragging
         loading={loading}
         error={error}
+        renderInfo={({ getState, resetColumnFilters }) => {
+          const { columnFilters } = getState();
+          return (
+            <div className="flex items-center justify-between w-full mb-5">
+              {loading ? (
+                <div>Loading tasks...</div>
+              ) : (
+                <div>{data.length} items</div>
+              )}
+
+              <div className="flex gap-2">
+                <Button>Advanced Filter</Button>
+                <Button
+                  variant="outline"
+                  onClick={() => resetColumnFilters()}
+                  disabled={!columnFilters.length}
+                >
+                  Clear filters
+                </Button>
+              </div>
+            </div>
+          );
+        }}
         // table props
         getCoreRowModel={getCoreRowModel()}
         data={data}
