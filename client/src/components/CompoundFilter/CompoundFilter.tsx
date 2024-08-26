@@ -1,5 +1,5 @@
 import { useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+// import { zodResolver } from "@hookform/resolvers/zod";
 import { noop } from "@tanstack/react-table";
 
 import CompoundFilterList from "@/components/CompoundFilter/CompoundFilterList";
@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { parseCompoundFilter } from "@/lib/utils";
-import { formSchema } from "@/lib/validation";
+// import { formSchema } from "@/lib/validation";
 import { CompoundFilterFormValues } from "@/lib/types";
 
 const Debug = () => {
@@ -38,7 +38,7 @@ const CompoundFilter = ({
   onChange?: (values: unknown) => void;
 }) => {
   const form = useForm<CompoundFilterFormValues>({
-    resolver: zodResolver(formSchema),
+    // resolver: zodResolver(formSchema),
     defaultValues: {
       filters: [],
     },

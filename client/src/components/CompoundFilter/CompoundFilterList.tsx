@@ -70,7 +70,7 @@ const CompoundFilterList = ({ name, parentRemove }: FiltersProps) => {
             <div
               key={field.id}
               className={cn(
-                "grid grid-cols-[100px_1fr] gap-2 border-2 border-slate-300 rounded-md p-4",
+                "grid grid-cols-[100px_1fr] gap-2 border-2 border-dashed border-slate-300 rounded-md p-4",
                 {
                   "mt-2": index > 0,
                 }
