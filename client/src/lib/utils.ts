@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
 import { CompoundFilterFormValues } from "@/lib/types";
-import { compoundFiltersSchema } from "@/lib/validation";
+import { compoundFilterSchema } from "@/lib/validation";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -106,21 +106,8 @@ export function parseCompoundFilterFormValues(
   return res;
 }
 
-function parseFilter(data: z.infer<typeof compoundFiltersSchema>) {
-  if ("property" in data) {
-    const propertyType = Object.keys(data).find(
-      (key) => key !== "property"
-    ) as keyof typeof data;
-    if (!propertyType) return null;
-    const operation = Object.keys(data[propertyType])[0];
-    const value = data[propertyType][operation as keyof object];
-    return {
-      property: data.property,
-      propertyType,
-      operation,
-      value,
-    };
-  } else if ("or" in data) {
+function parseFilter(data: z.infer<typeof compoundFilterSchema>) {
+  if ("or" in data) {
     return {
       operator: "or",
       filters: parseCompoundFilter(data.or),
@@ -130,23 +117,33 @@ function parseFilter(data: z.infer<typeof compoundFiltersSchema>) {
       operator: "and",
       filters: parseCompoundFilter(data.and),
     };
+  } else {
+    const propertyType = Object.keys(data).find(
+      (key) => key !== "property"
+    ) as keyof typeof data;
+    if (!propertyType) return null;
+    const objObject = data[propertyType] as unknown as object;
+    const operation = Object.keys(objObject)[0];
+    const value = objObject[operation as keyof object];
+    return {
+      property: data.property,
+      propertyType,
+      operation,
+      value,
+    };
   }
-
-  return null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseCompoundFilter(params: unknown): any[] {
-  // console.log("params", params);
   if (!params) return [];
   if (!Array.isArray(params)) return [];
 
   const res = [];
 
   for (let i = 0; i < params.length; i++) {
-    const parsed = compoundFiltersSchema.safeParse(params[i]);
+    const parsed = compoundFilterSchema.safeParse(params[i]);
     if (!parsed.data) {
-      // console.log("parsed.error", parsed.error);
       continue;
     }
     const filter = parseFilter(parsed.data);

@@ -43,23 +43,43 @@ describe("CompoundFilter", () => {
       <CompoundFilter
         compoundFilter={{
           and: [
-            { property: "name", rich_text: { contains: "ui design" } },
+            { property: "name", rich_text: { contains: "ui" } },
+            { property: "name", rich_text: { contains: "design" } },
             {
-              or: [{ property: "estimation", number: { equals: 5 } }],
+              or: [
+                {
+                  property: "estimation",
+                  number: { less_than: 5 },
+                },
+                {
+                  and: [{ property: "completed", checkbox: { equals: false } }],
+                },
+              ],
             },
           ],
         }}
       />
     );
 
-    expect(screen.getByDisplayValue("Name")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Contains")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("ui design")).toBeInTheDocument();
+    screen.getAllByDisplayValue("Name").forEach((el) => {
+      expect(el).toBeInTheDocument();
+    });
+    screen.getAllByDisplayValue("Contains").forEach((el) => {
+      expect(el).toBeInTheDocument();
+    });
+    expect(screen.getByDisplayValue("ui")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("design")).toBeInTheDocument();
 
     expect(screen.getByDisplayValue("OR")).toBeInTheDocument();
 
     expect(screen.getByDisplayValue("Estimation")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Equals")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Less Than")).toBeInTheDocument();
     expect(screen.getByDisplayValue(5)).toBeInTheDocument();
+
+    expect(screen.getByDisplayValue("AND")).toBeInTheDocument();
+
+    expect(screen.getByDisplayValue("Completed")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Equals")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Not Completed")).toBeInTheDocument();
   });
 });
