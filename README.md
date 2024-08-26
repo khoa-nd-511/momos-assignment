@@ -44,6 +44,8 @@ Run the project
 docker-compose up -d
 ```
 
+Visit [http://localhost:5173](http://localhost:5173)
+
 Run client test
 
 ```
