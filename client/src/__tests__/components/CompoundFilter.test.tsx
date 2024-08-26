@@ -160,4 +160,45 @@ describe("CompoundFilter", () => {
 
     expect(screen.getByText(/submit/i)).toBeDisabled();
   });
+
+  test("should be able to submit if there is filter after remove", async () => {
+    const handleFilterChange = jest.fn();
+    const { user } = render(
+      <CompoundFilter
+        onChange={handleFilterChange}
+        compoundFilter={{
+          and: [
+            {
+              or: [
+                { property: "name", rich_text: { contains: "ui" } },
+                { property: "name", rich_text: { contains: "design" } },
+              ],
+            },
+          ],
+        }}
+      />
+    );
+
+    expect(screen.getByText(/submit/i)).toBeEnabled();
+
+    expect(screen.getAllByDisplayValue("Name")).toHaveLength(2);
+    expect(screen.getAllByDisplayValue("Contains")).toHaveLength(2);
+    expect(screen.getByDisplayValue("design")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("ui")).toBeInTheDocument();
+
+    await user.click(screen.getByLabelText("remove filters.0.filters.1"));
+
+    expect(screen.getAllByDisplayValue("Name")).toHaveLength(1);
+    expect(screen.getAllByDisplayValue("Contains")).toHaveLength(1);
+    expect(screen.getByDisplayValue("ui")).toBeInTheDocument();
+
+    expect(screen.getByText(/submit/i)).toBeEnabled();
+
+    await user.click(screen.getByText(/submit/i));
+
+    expect(handleFilterChange).toHaveBeenCalledTimes(1);
+    expect(handleFilterChange).toHaveBeenCalledWith({
+      and: [{ or: [{ property: "name", rich_text: { contains: "ui" } }] }],
+    });
+  });
 });
