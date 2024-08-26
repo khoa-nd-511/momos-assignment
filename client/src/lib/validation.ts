@@ -7,12 +7,7 @@ const operationSchema = z.enum([
   "equals",
 ]);
 
-const propertyTypeSchema = z.enum([
-  "rich_text",
-  "number",
-  "boolean",
-  "multi_select",
-]);
+const propertyTypeSchema = z.enum(["rich_text", "number", "boolean"]);
 
 const filterSchema = z.object({
   property: z.string(),

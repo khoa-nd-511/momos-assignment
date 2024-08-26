@@ -93,7 +93,7 @@ export function parseCompoundFilter(
   const res = [];
 
   for (const filter of filters) {
-    if ("property" in filter) {
+    if ("property" in filter && filter.property && filter.operation) {
       res.push({
         property: filter.property,
         [propertyMap[filter.property]]: {

@@ -13,9 +13,10 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { ValueFieldMap } from "@/components/CompoundFilter/register";
+import { Input } from "@/components/ui/input";
 
 type FilterProps = {
   name: string;
@@ -26,9 +27,10 @@ type FilterProps = {
 
 const CompoundFilterListItem = (props: FilterProps) => {
   const { id, index, name, remove } = props;
-  const { control } = useFormContext();
+  const { control, getValues } = useFormContext();
   return (
     <div key={id} className="flex gap-2">
+      {/* Filter Property */}
       <FormField
         name={`${name}.${index}.property`}
         control={control}
@@ -44,7 +46,7 @@ const CompoundFilterListItem = (props: FilterProps) => {
                 <SelectContent>
                   <SelectItem value="name">Name</SelectItem>
                   <SelectItem value="estimation">Estimation</SelectItem>
-                  <SelectItem value="tags">Tags</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -52,6 +54,8 @@ const CompoundFilterListItem = (props: FilterProps) => {
           );
         }}
       />
+
+      {/* Filter Operation */}
       <FormField
         name={`${name}.${index}.operation`}
         control={control}
@@ -66,23 +70,37 @@ const CompoundFilterListItem = (props: FilterProps) => {
               <SelectContent>
                 <SelectItem value="equals">Equals</SelectItem>
                 <SelectItem value="contains">Contains</SelectItem>
+                <SelectItem value="less_than">Less Than</SelectItem>
+                <SelectItem value="greater_than">Greater Than</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />
           </FormItem>
         )}
       />
+
+      {/* Filter Value */}
       <FormField
         name={`${name}.${index}.value`}
         control={control}
-        render={({ field }) => (
-          <FormItem>
-            <FormControl>
-              <Input {...field} value={field.value as string} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        render={(props) => {
+          const ValueField =
+            ValueFieldMap[getValues(`${name}.${index}.property`)] || Input;
+          if (!ValueFieldMap[getValues(`${name}.${index}.property`)]) {
+            console.log(
+              "Component is not registered for this property. Default to Input"
+            );
+          }
+
+          return (
+            <FormItem>
+              <FormControl>
+                <ValueField {...props} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          );
+        }}
       />
       <Button
         type="button"
@@ -91,7 +109,7 @@ const CompoundFilterListItem = (props: FilterProps) => {
           remove(index);
         }}
       >
-        <X />
+        <X className="size-4" />
       </Button>
     </div>
   );

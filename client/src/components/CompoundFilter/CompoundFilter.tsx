@@ -2,6 +2,15 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { noop } from "@tanstack/react-table";
 
+import CompoundFilterList from "@/components/CompoundFilter/CompoundFilterList";
+import { register } from "@/components/CompoundFilter/register";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Card,
   CardContent,
@@ -11,7 +20,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import CompoundFilterList from "@/components/CompoundFilter/CompoundFilterList";
+import { Input } from "@/components/ui/input";
 import { parseCompoundFilter } from "@/lib/utils";
 import { formSchema } from "@/lib/validation";
 import { CompoundFilterFormValues } from "@/lib/types";
@@ -59,5 +68,28 @@ const CompoundFilter = ({
     </Form>
   );
 };
+
+register("name", ({ field }) => <Input {...field} />);
+register("estimation", ({ field }) => (
+  <Input
+    type="number"
+    {...field}
+    onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
+  />
+));
+register("completed", ({ field }) => (
+  <Select
+    value={String(field.value)}
+    onValueChange={(v) => field.onChange(v === "true")}
+  >
+    <SelectTrigger className="w-[180px]">
+      <SelectValue placeholder="Select a status" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="true">Completed</SelectItem>
+      <SelectItem value="false">Not Completed</SelectItem>
+    </SelectContent>
+  </Select>
+));
 
 export default CompoundFilter;
