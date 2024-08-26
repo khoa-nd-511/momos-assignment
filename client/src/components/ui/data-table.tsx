@@ -114,7 +114,7 @@ export function DataTable<TData>({
     <>
       {renderInfo && renderInfo(table)}
 
-      <div className="relative rounded-md border">
+      <div className="relative rounded border overflow-auto">
         <div
           ref={dragToOverlayRef}
           className="absolute left-0 top-0 h-full border-dashed border-2 opacity-0 border-slate-500 bg-slate-600/10"
