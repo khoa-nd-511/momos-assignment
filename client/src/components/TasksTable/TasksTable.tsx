@@ -42,77 +42,73 @@ const TasksTable = () => {
   }, [sorting, columnFilters, load, compoundFilter]);
 
   return (
-    <div className="overflow-auto">
-      <DataTable
-        // custom props
-        enableDragging
-        loading={loading}
-        error={error}
-        renderInfo={({ getState, resetColumnFilters }) => {
-          const { columnFilters } = getState();
-          return (
-            <div className="flex items-center justify-between w-full my-5">
-              {loading ? (
-                <div>Loading tasks...</div>
-              ) : (
-                <div>{data.length} items</div>
-              )}
+    <DataTable
+      // custom props
+      enableDragging
+      loading={loading}
+      error={error}
+      renderInfo={({ getState, resetColumnFilters }) => {
+        const { columnFilters } = getState();
+        return (
+          <div className="flex items-center justify-between w-full my-5">
+            {loading ? (
+              <div>Loading tasks...</div>
+            ) : (
+              <div>{data.length} items</div>
+            )}
 
-              <div className="flex gap-2">
-                <AdvancedFilterButton
-                  disabled={loading}
-                  compoundFilter={compoundFilter}
-                  onFilterChange={(filter) => {
-                    resetColumnFilters();
-                    setCompoundFilter(filter);
-                  }}
-                />
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    resetColumnFilters();
-                    setCompoundFilter(undefined);
-                  }}
-                  disabled={
-                    loading || (!columnFilters.length && !compoundFilter)
-                  }
-                >
-                  Clear filters
-                </Button>
-              </div>
+            <div className="flex gap-2">
+              <AdvancedFilterButton
+                disabled={loading}
+                compoundFilter={compoundFilter}
+                onFilterChange={(filter) => {
+                  resetColumnFilters();
+                  setCompoundFilter(filter);
+                }}
+              />
+              <Button
+                variant="outline"
+                onClick={() => {
+                  resetColumnFilters();
+                  setCompoundFilter(undefined);
+                }}
+                disabled={loading || (!columnFilters.length && !compoundFilter)}
+              >
+                Clear filters
+              </Button>
             </div>
-          );
-        }}
-        // table props
-        getCoreRowModel={getCoreRowModel()}
-        data={data}
-        columns={columns}
-        defaultColumn={{
-          size: 150,
-          minSize: 50,
-          maxSize: 500,
-        }}
-        state={{
-          sorting,
-          columnOrder,
-          columnFilters,
-        }}
-        enableSorting
-        enableMultiSort
-        enableFilters
-        enableColumnFilters
-        isMultiSortEvent={() => true}
-        onSortingChange={handleSortingChange}
-        onColumnOrderChange={setColumnOrder}
-        onColumnFiltersChange={handleColumnFiltersChange}
-        meta={{
-          sortIcons: {
-            asc: <ArrowUpIcon />,
-            desc: <ArrowDownIcon />,
-          },
-        }}
-      />
-    </div>
+          </div>
+        );
+      }}
+      // table props
+      getCoreRowModel={getCoreRowModel()}
+      data={data}
+      columns={columns}
+      defaultColumn={{
+        size: 150,
+        minSize: 50,
+        maxSize: 500,
+      }}
+      state={{
+        sorting,
+        columnOrder,
+        columnFilters,
+      }}
+      enableSorting
+      enableMultiSort
+      enableFilters
+      enableColumnFilters
+      isMultiSortEvent={() => true}
+      onSortingChange={handleSortingChange}
+      onColumnOrderChange={setColumnOrder}
+      onColumnFiltersChange={handleColumnFiltersChange}
+      meta={{
+        sortIcons: {
+          asc: <ArrowUpIcon />,
+          desc: <ArrowDownIcon />,
+        },
+      }}
+    />
   );
 };
 
