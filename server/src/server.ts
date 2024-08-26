@@ -3,7 +3,12 @@ require("dotenv").config();
 import express, { NextFunction, raw, Request, Response } from "express";
 import { Client } from "@notionhq/client";
 import { z } from "zod";
-import { QueryDatabaseParameters } from "@notionhq/client/build/src/api-endpoints";
+import {
+  QueryDatabaseParameters,
+  QueryDatabaseResponse,
+} from "@notionhq/client/build/src/api-endpoints";
+import cors from "cors";
+import { equal } from "assert";
 
 const taskRowSchema = z.object({
   properties: z.object({
@@ -183,6 +188,45 @@ function getPropertyQuery<TValue = unknown>(property: string, value: TValue) {
   }
 }
 
+function processQueryResults(results: QueryDatabaseResponse["results"]) {
+  const list: TaskRow[] = [];
+  for (const row of results) {
+    const parsed = taskRowSchema.safeParse(row);
+
+    if (!parsed.data) continue;
+
+    const {
+      properties: {
+        completed,
+        createdAt,
+        description,
+        dueDate,
+        estimation,
+        name,
+        priority,
+        status,
+        tags,
+      },
+    } = parsed.data;
+
+    list.push({
+      name: name.title[0].plain_text,
+      status: status.select.name,
+      priority: priority.status.name,
+      dueDate: dueDate.date.start,
+      completed: completed.checkbox,
+      tags: tags.multi_select.map((tag) => ({
+        name: tag.name,
+        id: tag.id,
+      })),
+      estimation: estimation.number,
+      description: description.rich_text[0].plain_text,
+      createdAt: createdAt.created_time,
+    });
+  }
+  return list;
+}
+
 // The dotenv library will read from your .env file into these values on `process.env`
 const notionDatabaseId = process.env.NOTION_DB_ID;
 const notionSecret = process.env.NOTION_SECRET;
@@ -201,12 +245,21 @@ const notion = new Client({
 const app = express();
 const port = 3000;
 
+const corsOptions = {
+  origin: "*",
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"], // Allow specific headers
+};
+
+app.use(cors(corsOptions));
+
+app.use(express.json());
+
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   next();
 });
 
-// GET request handler
 app.get("/tasks", async (req: Request, res: Response) => {
   const rawSort = req.query.sort ? String(req.query.sort) : "";
   const rawFilter = req.query.filter || {};
@@ -259,42 +312,22 @@ app.get("/tasks", async (req: Request, res: Response) => {
     filter,
   });
 
-  const list: TaskRow[] = [];
-  for (const row of query.results) {
-    const parsed = taskRowSchema.safeParse(row);
-
-    if (!parsed.data) continue;
-
-    const {
-      properties: {
-        completed,
-        createdAt,
-        description,
-        dueDate,
-        estimation,
-        name,
-        priority,
-        status,
-        tags,
-      },
-    } = parsed.data;
-
-    list.push({
-      name: name.title[0].plain_text,
-      status: status.select.name,
-      priority: priority.status.name,
-      dueDate: dueDate.date.start,
-      completed: completed.checkbox,
-      tags: tags.multi_select.map((tag) => ({
-        name: tag.name,
-        id: tag.id,
-      })),
-      estimation: estimation.number,
-      description: description.rich_text[0].plain_text,
-      createdAt: createdAt.created_time,
-    });
-  }
+  const list = processQueryResults(query.results);
   res.json(list);
+});
+
+app.post("/tasks", async (req: Request, res: Response) => {
+  try {
+    const query = await notion.databases.query({
+      database_id: notionDatabaseId,
+      filter: req.body,
+    });
+
+    res.json(processQueryResults(query.results));
+  } catch (error) {
+    console.log("error", error);
+    res.json([]);
+  }
 });
 
 app.listen(port, () => {

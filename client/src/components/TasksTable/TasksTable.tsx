@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-table";
 
 import { useLoader } from "@/lib/hooks";
-import { getTasks } from "@/lib/services/task";
+import { loadTasks } from "@/lib/services/task";
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "@/components/TasksTable/columns";
 import { Button } from "@/components/ui/button";
@@ -20,21 +20,26 @@ const TasksTable = () => {
     return columns.map((c) => c.accessorKey);
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [compoundFilter, setCompoundFilter] = useState<unknown>(undefined);
 
-  const { data = [], loading, error, load } = useLoader(getTasks);
+  const { data = [], loading, error, load } = useLoader(loadTasks);
 
   const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
     if (loading) return;
     setSorting(updater);
+    setCompoundFilter(undefined);
   };
-
-  const handleFilterChange = (filter: unknown) => {
-    console.log("filter", filter);
+  const handleColumnFiltersChange: OnChangeFn<ColumnFiltersState> = (
+    updater
+  ) => {
+    if (loading) return;
+    setColumnFilters(updater);
+    setCompoundFilter(undefined);
   };
 
   useEffect(() => {
-    load({ sorts: sorting, filters: columnFilters });
-  }, [sorting, columnFilters, load]);
+    load({ sorts: sorting, filters: columnFilters, compoundFilter });
+  }, [sorting, columnFilters, load, compoundFilter]);
 
   return (
     <div className="overflow-x-auto mt-5">
@@ -56,12 +61,20 @@ const TasksTable = () => {
               <div className="flex gap-2">
                 <AdvancedFilterButton
                   disabled={loading}
-                  onFilterChange={handleFilterChange}
+                  onFilterChange={(filter) => {
+                    resetColumnFilters();
+                    setCompoundFilter(filter);
+                  }}
                 />
                 <Button
                   variant="outline"
-                  onClick={() => resetColumnFilters()}
-                  disabled={!columnFilters.length || loading}
+                  onClick={() => {
+                    resetColumnFilters();
+                    setCompoundFilter(undefined);
+                  }}
+                  disabled={
+                    loading || (!columnFilters.length && !compoundFilter)
+                  }
                 >
                   Clear filters
                 </Button>
@@ -90,7 +103,7 @@ const TasksTable = () => {
         isMultiSortEvent={() => true}
         onSortingChange={handleSortingChange}
         onColumnOrderChange={setColumnOrder}
-        onColumnFiltersChange={setColumnFilters}
+        onColumnFiltersChange={handleColumnFiltersChange}
         meta={{
           sortIcons: {
             asc: <ArrowUpIcon />,

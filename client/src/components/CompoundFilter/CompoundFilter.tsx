@@ -60,7 +60,12 @@ const CompoundFilter = ({
             <CompoundFilterList name="filters" />
           </CardContent>
           <CardFooter className="flex justify-end">
-            <Button type="submit">Submit</Button>
+            <Button
+              type="submit"
+              disabled={form.getValues("filters").length === 0}
+            >
+              Submit
+            </Button>
           </CardFooter>
         </Card>
         {debug && <Debug />}
