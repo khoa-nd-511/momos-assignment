@@ -16,7 +16,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { ValueFieldMap } from "@/components/CompoundFilter/register";
-import { Input } from "@/components/ui/input";
 
 type FilterProps = {
   name: string;
@@ -27,7 +26,7 @@ type FilterProps = {
 
 const CompoundFilterListItem = (props: FilterProps) => {
   const { id, index, name, remove } = props;
-  const { control, getValues } = useFormContext();
+  const { control, trigger, getValues } = useFormContext();
   return (
     <div key={id} className="flex gap-2">
       {/* Filter Property */}
@@ -37,7 +36,13 @@ const CompoundFilterListItem = (props: FilterProps) => {
         render={({ field }) => {
           return (
             <FormItem>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                onValueChange={(v) => {
+                  field.onChange(v);
+                  trigger(`${name}.${index}.value`);
+                }}
+                defaultValue={field.value}
+              >
                 <FormControl>
                   <SelectTrigger className="w-[150px]">
                     <SelectValue />
@@ -85,8 +90,8 @@ const CompoundFilterListItem = (props: FilterProps) => {
         control={control}
         render={(props) => {
           const ValueField =
-            ValueFieldMap[getValues(`${name}.${index}.property`)] || Input;
-          if (!ValueFieldMap[getValues(`${name}.${index}.property`)]) {
+            ValueFieldMap[getValues(`${name}.${index}.property`)];
+          if (!ValueField) {
             console.log(
               "Component is not registered for this property. Default to Input"
             );
@@ -95,7 +100,7 @@ const CompoundFilterListItem = (props: FilterProps) => {
           return (
             <FormItem>
               <FormControl>
-                <ValueField {...props} />
+                {ValueField && <ValueField {...props} />}
               </FormControl>
               <FormMessage />
             </FormItem>
