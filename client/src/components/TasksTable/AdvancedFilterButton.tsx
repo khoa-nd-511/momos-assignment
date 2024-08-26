@@ -11,11 +11,13 @@ import {
 import { noop } from "@tanstack/react-table";
 
 interface AdvancedFilterButton extends ButtonProps {
+  compoundFilter?: unknown;
   onFilterChange?: (filter: unknown) => void;
 }
 
 const AdvancedFilterButton = ({
   onFilterChange = noop,
+  compoundFilter,
   ...buttonProps
 }: AdvancedFilterButton) => {
   return (
@@ -29,6 +31,7 @@ const AdvancedFilterButton = ({
           <DialogDescription>Create complex rules...</DialogDescription>
         </DialogHeader>
         <CompoundFilter
+          compoundFilter={compoundFilter}
           onChange={(value) => {
             onFilterChange(value);
           }}

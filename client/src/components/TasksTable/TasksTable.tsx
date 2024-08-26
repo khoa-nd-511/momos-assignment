@@ -61,6 +61,7 @@ const TasksTable = () => {
               <div className="flex gap-2">
                 <AdvancedFilterButton
                   disabled={loading}
+                  compoundFilter={compoundFilter}
                   onFilterChange={(filter) => {
                     resetColumnFilters();
                     setCompoundFilter(filter);

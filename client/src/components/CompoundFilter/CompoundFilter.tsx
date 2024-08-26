@@ -21,7 +21,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { parseCompoundFilter } from "@/lib/utils";
+import {
+  parseCompoundFilter,
+  parseCompoundFilterFormValues,
+} from "@/lib/utils";
 // import { formSchema } from "@/lib/validation";
 import { CompoundFilterFormValues } from "@/lib/types";
 
@@ -32,20 +35,22 @@ const Debug = () => {
 
 const CompoundFilter = ({
   debug,
+  compoundFilter,
   onChange = noop,
 }: {
   debug?: boolean;
   onChange?: (values: unknown) => void;
+  compoundFilter?: unknown;
 }) => {
   const form = useForm<CompoundFilterFormValues>({
     // resolver: zodResolver(formSchema),
     defaultValues: {
-      filters: [],
+      filters: parseCompoundFilter(compoundFilter),
     },
   });
 
   const onSubmit = (values: CompoundFilterFormValues) => {
-    const res = parseCompoundFilter(values.filters);
+    const res = parseCompoundFilterFormValues(values.filters);
     onChange({ and: res });
   };
 

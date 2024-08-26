@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
 import { CompoundFilterFormValues } from "@/lib/types";
+import { compoundFiltersSchema } from "@/lib/validation";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -82,7 +83,7 @@ export function parseNotionFilter(filters: ColumnFiltersState) {
   return parsed;
 }
 
-export function parseCompoundFilter(
+export function parseCompoundFilterFormValues(
   filters: CompoundFilterFormValues["filters"]
 ): Record<string, unknown>[] {
   const res = [];
@@ -97,9 +98,63 @@ export function parseCompoundFilter(
       });
     } else if ("operator" in filter) {
       res.push({
-        [filter.operator]: parseCompoundFilter(filter.filters),
+        [filter.operator]: parseCompoundFilterFormValues(filter.filters),
       });
     }
+  }
+
+  return res;
+}
+
+function parseFilter(data: z.infer<typeof compoundFiltersSchema>) {
+  if ("property" in data) {
+    const propertyType = Object.keys(data).find(
+      (key) => key !== "property"
+    ) as keyof typeof data;
+    if (!propertyType) return null;
+    const operation = Object.keys(data[propertyType])[0];
+    const value = data[propertyType][operation as keyof object];
+    return {
+      property: data.property,
+      propertyType,
+      operation,
+      value,
+    };
+  } else if ("or" in data) {
+    return {
+      operator: "or",
+      filters: parseCompoundFilter(data.or),
+    };
+  } else if ("and" in data) {
+    console.log("group and", data.and);
+    return {
+      operator: "and",
+      filters: parseCompoundFilter(data.and),
+    };
+  }
+
+  return null;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function parseCompoundFilter(params: unknown): any[] {
+  // console.log("params", params);
+  if (!params) return [];
+  if (!Array.isArray(params)) return [];
+
+  const res = [];
+
+  for (let i = 0; i < params.length; i++) {
+    const parsed = compoundFiltersSchema.safeParse(params[i]);
+    if (!parsed.data) {
+      // console.log("parsed.error", parsed.error);
+      continue;
+    }
+    const filter = parseFilter(parsed.data);
+    if (!filter) {
+      continue;
+    }
+    res.push(filter);
   }
 
   return res;
