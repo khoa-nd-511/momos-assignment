@@ -45,7 +45,12 @@ const CompoundFilter = ({
   const form = useForm<CompoundFilterFormValues>({
     // resolver: zodResolver(formSchema),
     defaultValues: {
-      filters: parseCompoundFilter(compoundFilter),
+      filters:
+        compoundFilter &&
+        typeof compoundFilter === "object" &&
+        "and" in compoundFilter
+          ? parseCompoundFilter(compoundFilter.and)
+          : [],
     },
   });
 

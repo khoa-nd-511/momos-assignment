@@ -126,7 +126,6 @@ function parseFilter(data: z.infer<typeof compoundFiltersSchema>) {
       filters: parseCompoundFilter(data.or),
     };
   } else if ("and" in data) {
-    console.log("group and", data.and);
     return {
       operator: "and",
       filters: parseCompoundFilter(data.and),
