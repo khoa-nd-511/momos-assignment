@@ -1,5 +1,11 @@
+import { render } from "@/test-utils";
+
+import CompoundFilter from "@/components/CompoundFilter";
+
 describe("CompoundFilter", () => {
   test("should render properly", () => {
-    expect(1).toEqual(1);
+    const { debug } = render(<CompoundFilter />);
+
+    debug();
   });
 });
