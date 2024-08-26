@@ -10,7 +10,7 @@
   - Not implemented yet
 - Support column filters (`checkbox` , `date` , `multi_select` , `number` , `rich_text` , `select` , `timestamp` , `status`) ✅
 - Support Compound filter ✅
-  - Currently there are 3 types being supported in the compound filter (`rich_text`, `checkbox`, `number`). However, we can easily be extended to support other types by using the `register` funtion
+  - Currently there are 3 types being supported in the compound filter (`rich_text`, `checkbox`, `number`). However, it can easily be extended to support other types by using the `register` funtion
 
 ```js
 register({
