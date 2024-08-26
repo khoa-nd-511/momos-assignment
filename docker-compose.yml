@@ -1,0 +1,15 @@
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    command: npm run start
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "5173:5173"
+    command: npm run preview
