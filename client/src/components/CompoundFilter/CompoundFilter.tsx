@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-// import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { noop } from "@tanstack/react-table";
 
 import CompoundFilterList from "@/components/CompoundFilter/CompoundFilterList";
@@ -25,7 +25,7 @@ import {
   parseCompoundFilter,
   parseCompoundFilterFormValues,
 } from "@/lib/utils";
-// import { formSchema } from "@/lib/validation";
+import { compoundFilterFormSchema } from "@/lib/validation";
 import { CompoundFilterFormValues } from "@/lib/types";
 
 const CompoundFilter = ({
@@ -36,7 +36,7 @@ const CompoundFilter = ({
   compoundFilter?: unknown;
 }) => {
   const form = useForm<CompoundFilterFormValues>({
-    // resolver: zodResolver(formSchema),
+    resolver: zodResolver(compoundFilterFormSchema),
     defaultValues: {
       filters:
         compoundFilter &&

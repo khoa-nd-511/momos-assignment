@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
 import { CompoundFilterFormValues } from "@/lib/types";
-import { compoundFilterSchema } from "@/lib/validation";
+import { notionCompoundFilterSchema } from "@/lib/validation";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -118,7 +118,7 @@ export function parseCompoundFilterFormValues(
   return res;
 }
 
-function parseFilter(data: z.infer<typeof compoundFilterSchema>) {
+function parseFilter(data: z.infer<typeof notionCompoundFilterSchema>) {
   if ("or" in data) {
     return {
       operator: "or",
@@ -146,15 +146,16 @@ function parseFilter(data: z.infer<typeof compoundFilterSchema>) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function parseCompoundFilter(params: unknown): any[] {
+export function parseCompoundFilter(
+  params: unknown
+): CompoundFilterFormValues["filters"] {
   if (!params) return [];
   if (!Array.isArray(params)) return [];
 
   const res = [];
 
   for (let i = 0; i < params.length; i++) {
-    const parsed = compoundFilterSchema.safeParse(params[i]);
+    const parsed = notionCompoundFilterSchema.safeParse(params[i]);
     if (!parsed.data) {
       continue;
     }
@@ -165,5 +166,5 @@ export function parseCompoundFilter(params: unknown): any[] {
     res.push(filter);
   }
 
-  return res;
+  return res as CompoundFilterFormValues["filters"];
 }

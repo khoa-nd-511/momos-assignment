@@ -44,6 +44,8 @@ const CompoundFilterListItem = (props: FilterProps) => {
                 onValueChange={(v) => {
                   field.onChange(v);
                   setValue(`${name}.${index}.propertyType`, PropertyTypeMap[v]);
+                  setValue(`${name}.${index}.value`, undefined);
+                  setValue(`${name}.${index}.operation`, "equals");
                   trigger(`${name}.${index}.value`);
                   trigger(`${name}.${index}.operation`);
                 }}
