@@ -1,4 +1,4 @@
-import { formSchema } from "@/lib/validation";
+import { compoundFilterFormSchema } from "@/lib/validation";
 import { Column, Table } from "@tanstack/react-table";
 import { z } from "zod";
 
@@ -25,4 +25,4 @@ export type NotionFilterProps<TData, TValue> = {
   column: Column<TData, TValue>;
 };
 
-export type CompoundFilterFormValues = z.infer<typeof formSchema>;
+export type CompoundFilterFormValues = z.infer<typeof compoundFilterFormSchema>;
